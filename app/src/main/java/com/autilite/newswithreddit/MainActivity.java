@@ -41,15 +41,16 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         // Display the front page of reddit
-        changeSubreddit("/");
+        onNavigationDrawerItemSelected("/");
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected(String subreddit) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.action_bar_container, StatusBarFragment.newInstance(subreddit))
+                .replace(R.id.container, PostFragment.newInstance(subreddit))
                 .commit();
     }
 
@@ -58,24 +59,8 @@ public class MainActivity extends ActionBarActivity
         // when clicking post item
     }
 
-    private void changeSubreddit(String subreddit) {
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container, PostFragment.newInstance(subreddit))
-                .commit();
-    }
-
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
+    public void onSectionAttached(String subreddit) {
+        mTitle = subreddit;
     }
 
     public void restoreActionBar() {
@@ -117,26 +102,26 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class StatusBarFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String ARG_SUBREDDIT = "section_number";
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static StatusBarFragment newInstance(String subreddit) {
+            StatusBarFragment fragment = new StatusBarFragment();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putString(ARG_SUBREDDIT, subreddit);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
+        public StatusBarFragment() {
         }
 
         @Override
@@ -150,7 +135,7 @@ public class MainActivity extends ActionBarActivity
         public void onAttach(Activity activity) {
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+                    getArguments().getString(ARG_SUBREDDIT));
         }
     }
 

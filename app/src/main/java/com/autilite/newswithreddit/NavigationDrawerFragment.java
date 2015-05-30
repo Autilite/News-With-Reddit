@@ -109,7 +109,7 @@ public class NavigationDrawerFragment extends Fragment {
                 mDrawerListView.post(new Runnable() {
                     @Override
                     public void run() {
-                        subreddits.add(0, "Frontpage");
+                        subreddits.add(0, "/");
                         mDrawerListView.setAdapter(new ArrayAdapter<>(
                                 getActionBar().getThemedContext(),
                                 R.layout.subreddit_list_item,
@@ -211,7 +211,9 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            if (mDrawerListView != null && mDrawerListView.getAdapter() != null) {
+                mCallbacks.onNavigationDrawerItemSelected((String) mDrawerListView.getAdapter().getItem(position));
+            }
         }
     }
 
@@ -291,6 +293,6 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onNavigationDrawerItemSelected(String subreddit);
     }
 }
