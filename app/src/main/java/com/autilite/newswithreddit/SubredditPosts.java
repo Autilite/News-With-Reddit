@@ -9,19 +9,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by kelvin on 5/29/15.
  */
 public class SubredditPosts {
-    private final String URL_TEMPLATE = "http://www.reddit.com/r/SUBREDDIT/.json";
+    private static final String DEFAULT_SUBREDDITS = "http://www.reddit.com/subreddits/default.json";
+    private static final String SUBREDDIT_TEMPLATE = "http://www.reddit.com/r/SUBREDDIT/.json";
 
     private String subreddit;
     private String url;
 
     /**
-     * Class for fetching posts from a subreddit
+     * Class for fetching posts from a subreddit.
      * @param subreddit
      *      The name of the subreddit or "/" for the front page. Do not include "/r/"
      */
@@ -34,7 +36,7 @@ public class SubredditPosts {
         if (subreddit.equals("/")) {
             url = "http://www.reddit.com/.json";
         } else {
-            url = URL_TEMPLATE.replace("SUBREDDIT", subreddit);
+            url = SUBREDDIT_TEMPLATE.replace("SUBREDDIT", subreddit);
         }
     }
 
@@ -68,5 +70,22 @@ public class SubredditPosts {
             Log.e("JSON", "Post JSON parse exception:\n" + entry, e);
         }
         return posts;
+    }
+
+    public static List<String> fetchDefaultSubreddits() {
+        String output = NetworkConnection.readContents(DEFAULT_SUBREDDITS);
+        List<String> subreddits = new ArrayList<>();
+        JSONObject entry = new JSONObject();
+        try {
+            JSONObject data = new JSONObject(output).getJSONObject("data");
+            JSONArray children = data.getJSONArray("children");
+            for (int i = 0; i < children.length(); i++) {
+                entry = children.getJSONObject(i).getJSONObject("data");
+                subreddits.add(entry.getString("display_name"));
+            }
+        } catch (JSONException e) {
+            Log.e("JSON", "Post JSON parse exception:\n" + entry, e);
+        }
+        return subreddits;
     }
 }
