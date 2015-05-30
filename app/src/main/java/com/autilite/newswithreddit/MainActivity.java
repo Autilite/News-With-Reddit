@@ -1,11 +1,14 @@
 package com.autilite.newswithreddit;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +17,8 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, PostFragment.PostItemCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, PostListFragment.PostItemCallbacks,
+        PostCommentFragment.PostCommentListener{
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -50,13 +54,17 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.action_bar_container, StatusBarFragment.newInstance(subreddit))
-                .replace(R.id.container, PostFragment.newInstance(subreddit))
+                .replace(R.id.container, PostListFragment.newInstance(subreddit))
                 .commit();
     }
 
     @Override
-    public void onPostSelect(int position) {
-        // when clicking post item
+    public void onPostSelect(Post post) {
+        Log.i("POST", post.getTitle() + "(" + post.getSubreddit() + ") was selected.");
+        PostCommentFragment fragment = new PostCommentFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction()
+                .replace(R.id.container, fragment).addToBackStack(null).commit();
     }
 
     public void onSectionAttached(String subreddit) {
@@ -97,6 +105,11 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        // TODO
     }
 
     /**

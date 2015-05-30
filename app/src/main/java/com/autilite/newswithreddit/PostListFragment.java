@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,12 +21,12 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link com.autilite.newswithreddit.PostFragment.PostItemCallbacks} interface
+ * {@link PostListFragment.PostItemCallbacks} interface
  * to handle interaction events.
- * Use the {@link PostFragment#newInstance} factory method to
+ * Use the {@link PostListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PostFragment extends Fragment {
+public class PostListFragment extends Fragment {
     private static final String ARG_PARAM1 = "SUBREDDIT";
     private Handler handler;
 
@@ -40,10 +43,10 @@ public class PostFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param subreddit Parameter 1.
-     * @return A new instance of fragment PostFragment.
+     * @return A new instance of fragment PostListFragment.
      */
-    public static PostFragment newInstance(String subreddit) {
-        PostFragment fragment = new PostFragment();
+    public static PostListFragment newInstance(String subreddit) {
+        PostListFragment fragment = new PostListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, subreddit);
         fragment.setArguments(args);
@@ -52,7 +55,7 @@ public class PostFragment extends Fragment {
         return fragment;
     }
 
-    public PostFragment() {
+    public PostListFragment() {
         // Required empty public constructor
         handler = new Handler();
         posts = new ArrayList<>();
@@ -71,8 +74,15 @@ public class PostFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_posts, container, false);
+        View view = inflater.inflate(R.layout.fragment_post_list, container, false);
         postsList = (ListView) view.findViewById(R.id.post_list);
+        postsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Post post = (Post) parent.getItemAtPosition(position);
+                mListener.onPostSelect(post);
+            }
+        });
         return view;
     }
 
@@ -150,9 +160,9 @@ public class PostFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(int position) {
+    public void onButtonPressed(Post post) {
         if (mListener != null) {
-            mListener.onPostSelect(position);
+            mListener.onPostSelect(post);
         }
     }
 
@@ -184,7 +194,7 @@ public class PostFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface PostItemCallbacks {
-        public void onPostSelect(int position);
+        public void onPostSelect(Post post);
     }
 
 }

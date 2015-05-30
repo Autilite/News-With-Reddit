@@ -1,5 +1,7 @@
 package com.autilite.newswithreddit;
 
+import android.view.View;
+
 /**
  * Created by kelvin on 5/29/15.
  */
