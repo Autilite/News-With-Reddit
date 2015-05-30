@@ -1,7 +1,7 @@
 package com.autilite.newswithreddit;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -20,6 +20,7 @@ public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, PostListFragment.PostItemCallbacks,
         PostCommentFragment.PostCommentListener{
 
+    public static final String COMMENT_QUERY = "com.autilite.newswithreddit.COMMENT";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -44,8 +45,6 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        // Display the front page of reddit
-        onNavigationDrawerItemSelected("/");
     }
 
     @Override
@@ -61,10 +60,9 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onPostSelect(Post post) {
         Log.i("POST", post.getTitle() + "(" + post.getSubreddit() + ") was selected.");
-        PostCommentFragment fragment = new PostCommentFragment();
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .replace(R.id.container, fragment).addToBackStack(null).commit();
+        Intent intent = new Intent(this, CommentActivity.class);
+        intent.putExtra(COMMENT_QUERY, post.getPermalink());
+        startActivity(intent);
     }
 
     public void onSectionAttached(String subreddit) {
