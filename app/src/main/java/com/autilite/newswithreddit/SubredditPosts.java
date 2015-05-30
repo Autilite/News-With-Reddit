@@ -48,6 +48,7 @@ public class SubredditPosts {
             JSONArray children = data.getJSONArray("children");
             for (int i = 0; i < children.length(); i++) {
                 entry = children.getJSONObject(i).getJSONObject("data");
+                // TODO handle html entities
                 Post post = new Post.PostBuilder().setDomain(entry.getString("domain"))
                         .setSubreddit(entry.getString("subreddit"))
                         .setThumbnail(entry.getString("thumbnail"))

@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:padding="@dimen/post_item_padding"
+    >
 
     <TextView
         android:id="@+id/post_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/post_score"
-        android:layout_toStartOf="@id/post_score"
         android:layout_alignParentTop="true"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="@style/postPrimary"
+        />
+
+    <TextView
+        android:id="@+id/post_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/post_title"
+        android:textAppearance="@style/postSecondary"
         />
 
     <TextView
         android:id="@+id/post_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/post_score"
-        android:layout_toStartOf="@id/post_score"
-        android:layout_below="@+id/post_title"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@id/post_stats"
+        android:textAppearance="@style/postSecondary"
         />
 
-    <TextView
-        android:id="@+id/post_score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        />
 </RelativeLayout>

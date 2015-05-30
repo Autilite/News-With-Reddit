@@ -126,12 +126,23 @@ public class PostFragment extends Fragment {
                 }
 
                 TextView postTitle = (TextView) convertView.findViewById(R.id.post_title);
+                TextView postStats = (TextView) convertView.findViewById(R.id.post_stats);
                 TextView postDetails = (TextView) convertView.findViewById(R.id.post_author);
-                TextView postScore = (TextView) convertView.findViewById(R.id.post_score);
 
-                postTitle.setText(posts.get(position).getTitle());
-                postDetails.setText(posts.get(position).getAuthor());
-                postScore.setText(Integer.toString(posts.get(position).getScore()));
+                String delim = " - ";
+                Post post = posts.get(position);
+                StringBuilder stats = new StringBuilder();
+                stats.append(post.getNum_comments()).append(" comments")
+                        .append(delim).append(post.getScore()).append(" pts");
+                StringBuilder author = new StringBuilder();
+                author.append(post.getAuthor())
+                        .append(delim).append(post.getSubreddit())
+                        .append(delim).append(post.getDomain());
+
+
+                postTitle.setText(post.getTitle());
+                postStats.setText(stats.toString());
+                postDetails.setText(author.toString());
                 return convertView;
             }
         };
