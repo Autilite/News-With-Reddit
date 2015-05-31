@@ -100,7 +100,7 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void run() {
                 // Display default subreddits on the nav drawer
-                final List<String> subreddits = SubredditPosts.fetchDefaultSubreddits();
+                final List<String> subreddits = SubredditLinks.fetchDefaultSubreddits();
                 mDrawerListView.post(new Runnable() {
                     @Override
                     public void run() {

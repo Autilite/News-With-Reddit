@@ -16,9 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import com.autilite.newswithreddit.data.Link;
+
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, PostListFragment.PostItemCallbacks,
-        PostCommentFragment.PostCommentListener{
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, LinkListFragment.LinkItemCallbacks,
+        LinkCommentFragment.LinkCommentListener {
 
     public static final String COMMENT_QUERY = "com.autilite.newswithreddit.COMMENT";
     /**
@@ -53,15 +55,15 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.action_bar_container, StatusBarFragment.newInstance(subreddit))
-                .replace(R.id.container, PostListFragment.newInstance(subreddit))
+                .replace(R.id.container, LinkListFragment.newInstance(subreddit))
                 .commit();
     }
 
     @Override
-    public void onPostSelect(Post post) {
-        Log.i("POST", post.getTitle() + "(" + post.getSubreddit() + ") was selected.");
+    public void onLinkSelect(Link link) {
+        Log.i("LINK", link.getTitle() + "(" + link.getSubreddit() + ") was selected.");
         Intent intent = new Intent(this, CommentActivity.class);
-        intent.putExtra(COMMENT_QUERY, post.getPermalink());
+        intent.putExtra(COMMENT_QUERY, link.getPermalink());
         startActivity(intent);
     }
 

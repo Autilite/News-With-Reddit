@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 
 public class CommentActivity extends ActionBarActivity
-        implements PostCommentFragment.PostCommentListener {
+        implements LinkCommentFragment.LinkCommentListener {
 
     private String mPermaUrl;
 
@@ -25,7 +25,7 @@ public class CommentActivity extends ActionBarActivity
                 return;
             }
 
-            PostCommentFragment fragment = PostCommentFragment.newInstance(mPermaUrl);
+            LinkCommentFragment fragment = LinkCommentFragment.newInstance(mPermaUrl);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.comment_container, fragment)
                     .commit();

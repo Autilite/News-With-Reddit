@@ -2,30 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/post_item_padding" >
+    android:padding="@dimen/link_item_padding" >
 
     <TextView
-        android:id="@+id/post_title"
+        android:id="@+id/link_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:textAppearance="@style/postPrimary"
+        android:textAppearance="@style/linkPrimary"
         />
 
     <TextView
-        android:id="@+id/post_stats"
+        android:id="@+id/link_stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/post_title"
-        android:textAppearance="@style/postSecondary"
+        android:layout_below="@id/link_title"
+        android:textAppearance="@style/linkSecondary"
         />
 
     <TextView
-        android:id="@+id/post_author"
+        android:id="@+id/link_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/post_stats"
-        android:textAppearance="@style/postSecondary"
+        android:layout_below="@id/link_stats"
+        android:textAppearance="@style/linkSecondary"
         />
 
 </RelativeLayout>

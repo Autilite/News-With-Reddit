@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.autilite.newswithreddit.data.Link;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,44 +21,44 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PostListFragment.PostItemCallbacks} interface
+ * {@link com.autilite.newswithreddit.LinkListFragment.LinkItemCallbacks} interface
  * to handle interaction events.
- * Use the {@link PostListFragment#newInstance} factory method to
+ * Use the {@link LinkListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PostListFragment extends Fragment {
+public class LinkListFragment extends Fragment {
     private static final String ARG_PARAM1 = "SUBREDDIT";
     private Handler handler;
 
-    private ListView postsList;
+    private ListView linksList;
 
     private String subreddit;
-    private List<Post> posts;
-    private SubredditPosts loposts;
+    private List<Link> links;
+    private SubredditLinks lolinks;
 
-    private PostItemCallbacks mListener;
+    private LinkItemCallbacks mListener;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @param subreddit Parameter 1.
-     * @return A new instance of fragment PostListFragment.
+     * @return A new instance of fragment LinkListFragment.
      */
-    public static PostListFragment newInstance(String subreddit) {
-        PostListFragment fragment = new PostListFragment();
+    public static LinkListFragment newInstance(String subreddit) {
+        LinkListFragment fragment = new LinkListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, subreddit);
         fragment.setArguments(args);
-        fragment.loposts = new SubredditPosts(subreddit);
+        fragment.lolinks = new SubredditLinks(subreddit);
         fragment.subreddit = subreddit;
         return fragment;
     }
 
-    public PostListFragment() {
+    public LinkListFragment() {
         // Required empty public constructor
         handler = new Handler();
-        posts = new ArrayList<>();
+        links = new ArrayList<>();
     }
 
     @Override
@@ -74,13 +74,13 @@ public class PostListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_post_list, container, false);
-        postsList = (ListView) view.findViewById(R.id.post_list);
-        postsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        View view = inflater.inflate(R.layout.fragment_link_list, container, false);
+        linksList = (ListView) view.findViewById(R.id.link_list);
+        linksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Post post = (Post) parent.getItemAtPosition(position);
-                mListener.onPostSelect(post);
+                Link link = (Link) parent.getItemAtPosition(position);
+                mListener.onLinkSelect(link);
             }
         });
         return view;
@@ -97,13 +97,13 @@ public class PostListFragment extends Fragment {
         // setRetainInstance(true) method has been called on
         // this fragment
 
-        if (posts.size() == 0) {
+        if (links.size() == 0) {
             // Must execute network tasks outside the UI
             // thread. So create a new thread.
 
             new Thread() {
                 public void run() {
-                    posts.addAll(loposts.fetchPosts());
+                    links.addAll(lolinks.fetchLinks());
 
                     // UI elements should be accessed only in
                     // the primary thread, so we must use the
@@ -126,43 +126,43 @@ public class PostListFragment extends Fragment {
         if (getActivity() == null)
             return;
 
-        ArrayAdapter<Post> adapter = new ArrayAdapter<Post>(getActivity(), R.layout.fragment_post_item, posts) {
+        ArrayAdapter<Link> adapter = new ArrayAdapter<Link>(getActivity(), R.layout.fragment_link_item, links) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 if (convertView == null) {
                     convertView = getActivity()
                             .getLayoutInflater()
-                            .inflate(R.layout.fragment_post_item, null);
+                            .inflate(R.layout.fragment_link_item, null);
                 }
 
-                TextView postTitle = (TextView) convertView.findViewById(R.id.post_title);
-                TextView postStats = (TextView) convertView.findViewById(R.id.post_stats);
-                TextView postDetails = (TextView) convertView.findViewById(R.id.post_author);
+                TextView linkTitle = (TextView) convertView.findViewById(R.id.link_title);
+                TextView linkStats = (TextView) convertView.findViewById(R.id.link_stats);
+                TextView linkDetails = (TextView) convertView.findViewById(R.id.link_author);
 
                 String delim = " - ";
-                Post post = posts.get(position);
+                Link link = links.get(position);
                 StringBuilder stats = new StringBuilder();
-                stats.append(post.getNum_comments()).append(" comments")
-                        .append(delim).append(post.getScore()).append(" pts");
+                stats.append(link.getNum_comments()).append(" comments")
+                        .append(delim).append(link.getScore()).append(" pts");
                 StringBuilder author = new StringBuilder();
-                author.append(post.getAuthor())
-                        .append(delim).append(post.getSubreddit())
-                        .append(delim).append(post.getDomain());
+                author.append(link.getAuthor())
+                        .append(delim).append(link.getSubreddit())
+                        .append(delim).append(link.getDomain());
 
 
-                postTitle.setText(post.getTitle());
-                postStats.setText(stats.toString());
-                postDetails.setText(author.toString());
+                linkTitle.setText(link.getTitle());
+                linkStats.setText(stats.toString());
+                linkDetails.setText(author.toString());
                 return convertView;
             }
         };
-        postsList.setAdapter(adapter);
+        linksList.setAdapter(adapter);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Post post) {
+    public void onButtonPressed(Link link) {
         if (mListener != null) {
-            mListener.onPostSelect(post);
+            mListener.onLinkSelect(link);
         }
     }
 
@@ -170,10 +170,10 @@ public class PostListFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (PostItemCallbacks) activity;
+            mListener = (LinkItemCallbacks) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement PostItemCallbacks");
+                    + " must implement LinkItemCallbacks");
         }
     }
 
@@ -193,8 +193,8 @@ public class PostListFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface PostItemCallbacks {
-        public void onPostSelect(Post post);
+    public interface LinkItemCallbacks {
+        public void onLinkSelect(Link link);
     }
 
 }

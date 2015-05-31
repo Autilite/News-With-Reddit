@@ -12,35 +12,35 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link com.autilite.newswithreddit.PostCommentFragment.PostCommentListener} interface
+ * {@link com.autilite.newswithreddit.LinkCommentFragment.LinkCommentListener} interface
  * to handle interaction events.
- * Use the {@link PostCommentFragment#newInstance} factory method to
+ * Use the {@link LinkCommentFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PostCommentFragment extends Fragment {
+public class LinkCommentFragment extends Fragment {
     private static final String ARG_URL = "threadURL";
 
     private String mPermaUrl;
 
-    private PostCommentListener mListener;
+    private LinkCommentListener mListener;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @param permaUrl
-     *  The post's permanent url
-     * @return A new instance of fragment PostCommentFragment.
+     *  The link's permanent url
+     * @return A new instance of fragment LinkCommentFragment.
      */
-    public static PostCommentFragment newInstance(String permaUrl) {
-        PostCommentFragment fragment = new PostCommentFragment();
+    public static LinkCommentFragment newInstance(String permaUrl) {
+        LinkCommentFragment fragment = new LinkCommentFragment();
         Bundle args = new Bundle();
         args.putString(ARG_URL, permaUrl);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public PostCommentFragment() {
+    public LinkCommentFragment() {
         // Required empty public constructor
     }
 
@@ -56,7 +56,7 @@ public class PostCommentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_post_comment, container, false);
+        return inflater.inflate(R.layout.fragment_link_comment, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -70,10 +70,10 @@ public class PostCommentFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (PostCommentListener) activity;
+            mListener = (LinkCommentListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement PostCommentListener");
+                    + " must implement LinkCommentListener");
         }
     }
 
@@ -93,7 +93,7 @@ public class PostCommentFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface PostCommentListener {
+    public interface LinkCommentListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }

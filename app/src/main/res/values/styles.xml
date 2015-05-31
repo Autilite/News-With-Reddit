@@ -5,16 +5,16 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="postPrimary">
+    <style name="linkPrimary">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">#72a0c1</item>
-        <item name="android:textSize">@dimen/post_title_size</item>
+        <item name="android:textSize">@dimen/link_title_size</item>
     </style>
 
-    <style name="postSecondary">
+    <style name="linkSecondary">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">#848482</item>
-        <item name="android:textSize">@dimen/post_about_size</item>
+        <item name="android:textSize">@dimen/link_about_size</item>
     </style>
 
 </resources>
