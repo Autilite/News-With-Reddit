@@ -109,7 +109,7 @@ public class LinkListFragment extends Fragment {
                     // the primary thread, so we must use the
                     // handler here.
 
-                    handler.post(new Runnable() {
+                    linksList.post(new Runnable() {
                         public void run() {
                             createAdapter();
                         }

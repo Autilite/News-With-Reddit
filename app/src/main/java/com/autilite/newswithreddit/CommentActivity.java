@@ -11,13 +11,15 @@ import android.view.MenuItem;
 public class CommentActivity extends ActionBarActivity
         implements LinkCommentFragment.LinkCommentListener {
 
-    private String mPermaUrl;
+    private String mId;
+    private String mSubreddit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        mPermaUrl = intent.getStringExtra(MainActivity.COMMENT_QUERY);
+        mId = intent.getStringExtra(MainActivity.COMMENT_QUERY);
+        mSubreddit = intent.getStringExtra(MainActivity.COMMENT_SUBREDDIT);
         setContentView(R.layout.activity_comment);
 
         if (findViewById(R.id.comment_container) != null) {
@@ -25,9 +27,9 @@ public class CommentActivity extends ActionBarActivity
                 return;
             }
 
-            LinkCommentFragment fragment = LinkCommentFragment.newInstance(mPermaUrl);
+            LinkCommentFragment fragment = LinkCommentFragment.newInstance(mSubreddit, mId);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.comment_container, fragment)
+                    .replace(R.id.comment_container, fragment)
                     .commit();
         }
     }

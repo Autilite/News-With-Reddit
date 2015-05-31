@@ -194,6 +194,8 @@ public class Link extends Thing { // t3, implements votable, created
 
     public static class LinkBuilder {
 
+        private String id;
+        private String name;
         private String author;
         private String author_flair_css_class;
         private String author_flare_text;
@@ -224,6 +226,15 @@ public class Link extends Thing { // t3, implements votable, created
         private long created;
         private long created_utc;
 
+        public LinkBuilder setId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public LinkBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
         public LinkBuilder setAuthor(String author) {
             this.author = author;
             return this;
@@ -371,6 +382,8 @@ public class Link extends Thing { // t3, implements votable, created
 
         public Link createLink() {
             Link link = new Link();
+            link.id = this.id;
+            link.name = this.name;
             link.author = this.author;
             link.author_flair_css_class = this.author_flair_css_class;
             link.author_flare_text = this.author_flare_text;
