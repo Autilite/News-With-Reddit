@@ -139,11 +139,19 @@ public class LinkCommentFragment extends Fragment {
                 }
 
                 TextView commentBody = (TextView) convertView.findViewById(R.id.comment_body);
-                TextView commentInfo = (TextView) convertView.findViewById(R.id.comment_info);
+                TextView commentAuthor = (TextView) convertView.findViewById(R.id.comment_author);
+                TextView commentPoints = (TextView) convertView.findViewById(R.id.comment_points);
+                TextView commentTime = (TextView) convertView.findViewById(R.id.comment_time_ago);
 
                 Comment com = comments.get(position);
                 commentBody.setText(com.getBody());
-                commentInfo.setText(com.getAuthor());
+                commentAuthor.setText(com.getAuthor());
+                if (com.isScore_hidden()) {
+                    commentPoints.setText("[score hidden]");
+                } else {
+                    commentPoints.setText(com.getScore() + " points");
+                }
+
                 int padding = getResources().getDimensionPixelSize(R.dimen.comment_item_padding);
                 int paddingLeft = padding + getResources().
                         getDimensionPixelSize(R.dimen.comment_item_level_padding)

@@ -5,16 +5,37 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="linkPrimary">
+    <style name="defaultFont">
         <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="linkPrimary" parent="defaultFont">
         <item name="android:textColor">#72a0c1</item>
         <item name="android:textSize">@dimen/link_title_size</item>
     </style>
 
-    <style name="linkSecondary">
-        <item name="android:fontFamily">sans-serif</item>
+    <style name="linkSecondary" parent="defaultFont">
         <item name="android:textColor">#848482</item>
         <item name="android:textSize">@dimen/link_about_size</item>
+    </style>
+
+    <style name="commentAuthor" parent="defaultFont">
+        <item name="android:textColor">#151515</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="commentPoints" parent="defaultFont">
+        <item name="android:textColor">#777777</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="commentTime" parent="commentPoints">
+    </style>
+
+    <style name="commentBody" parent="defaultFont">
+        <item name="android:textColor">#222222</item>
     </style>
 
 </resources>
