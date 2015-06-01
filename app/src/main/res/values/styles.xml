@@ -5,37 +5,33 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="defaultFont">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">12sp</item>
-    </style>
-
-    <style name="linkPrimary" parent="defaultFont">
+    <style name="linkPrimary">
         <item name="android:textColor">#72a0c1</item>
-        <item name="android:textSize">@dimen/link_title_size</item>
+        <item name="android:textSize">@dimen/largeTextSize</item>
     </style>
 
-    <style name="linkSecondary" parent="defaultFont">
+    <style name="linkSecondary">
         <item name="android:textColor">#848482</item>
-        <item name="android:textSize">@dimen/link_about_size</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
-    <style name="commentAuthor" parent="defaultFont">
+    <style name="commentAuthor">
         <item name="android:textColor">#151515</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
-    <style name="commentPoints" parent="defaultFont">
+    <style name="commentPoints">
         <item name="android:textColor">#777777</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
-    <style name="commentTime" parent="commentPoints">
+    <style name="commentTime">
     </style>
 
-    <style name="commentBody" parent="defaultFont">
+    <style name="commentBody">
         <item name="android:textColor">#222222</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
 </resources>

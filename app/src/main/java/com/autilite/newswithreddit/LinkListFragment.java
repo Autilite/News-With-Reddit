@@ -2,7 +2,6 @@ package com.autilite.newswithreddit;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +28,10 @@ import java.util.List;
  */
 public class LinkListFragment extends Fragment {
     private static final String ARG_PARAM1 = "SUBREDDIT";
-    private Handler handler;
 
     private ListView linksList;
 
-    private String subreddit;
+    private String mSubreddit;
     private List<Link> links;
     private SubredditLinks lolinks;
 
@@ -54,13 +52,12 @@ public class LinkListFragment extends Fragment {
         args.putString(ARG_PARAM1, subreddit);
         fragment.setArguments(args);
         fragment.lolinks = new SubredditLinks(subreddit);
-        fragment.subreddit = subreddit;
+        fragment.mSubreddit = subreddit;
         return fragment;
     }
 
     public LinkListFragment() {
         // Required empty public constructor
-        handler = new Handler();
         links = new ArrayList<>();
     }
 
@@ -68,7 +65,7 @@ public class LinkListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            subreddit = getArguments().getString(ARG_PARAM1);
+            mSubreddit = getArguments().getString(ARG_PARAM1);
         }
         setRetainInstance(true);
     }
@@ -99,23 +96,16 @@ public class LinkListFragment extends Fragment {
     }
 
     private void initialize() {
-        // This should run only once for the fragment as the
-        // setRetainInstance(true) method has been called on
-        // this fragment
-
         if (links.size() == 0) {
-            // Must execute network tasks outside the UI
-            // thread. So create a new thread.
-
+            // Can't fetch likes over network on the UI thread
+            // So make a new one
             mContainer.addView(mProgressBar);
             new Thread() {
                 public void run() {
                     links.addAll(lolinks.fetchLinks());
 
-                    // UI elements should be accessed only in
-                    // the primary thread, so we must use the
-                    // handler here.
-
+                    // UI elements should be accessed only on the primary thread
+                    // Run adapter on the list view
                     linksList.post(new Runnable() {
                         public void run() {
                             createAdapter();

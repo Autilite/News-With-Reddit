@@ -82,12 +82,6 @@ public class SubredditLinks {
         List<Link> links = new ArrayList<>();
         JSONObject jsonLink = new JSONObject();
         try {
-//            JSONArray children = new JSONObject(output).getJSONObject("data").getJSONArray("children");
-//            for (int i = 0; i < children.length(); i++) {
-//                jsonLink = children.getJSONObject(i);
-//                Link link = (Link) Thing.getThingFactory().makeThing(jsonLink);
-//                links.add(link);
-//            }
             List<Thing> things = Thing.getThingFactory().makeListThing(new JSONObject(output));
             for (Thing thing : things) {
                 links.add((Link) thing);

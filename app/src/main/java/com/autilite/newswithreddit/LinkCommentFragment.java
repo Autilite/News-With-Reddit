@@ -157,7 +157,7 @@ public class LinkCommentFragment extends Fragment {
                 commentBody.setText(com.getBody());
                 commentAuthor.setText(com.getAuthor());
                 if (com.isScore_hidden()) {
-                    commentPoints.setText("[score hidden]");
+                    commentPoints.setText(R.string.score_hidden);
                 } else {
                     commentPoints.setText(com.getScore() + " points");
                 }
