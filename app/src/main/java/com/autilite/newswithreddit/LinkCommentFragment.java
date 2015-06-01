@@ -144,6 +144,11 @@ public class LinkCommentFragment extends Fragment {
                 Comment com = comments.get(position);
                 commentBody.setText(com.getBody());
                 commentInfo.setText(com.getAuthor());
+                int padding = getResources().getDimensionPixelSize(R.dimen.comment_item_padding);
+                int paddingLeft = padding + getResources().
+                        getDimensionPixelSize(R.dimen.comment_item_level_padding)
+                        * com.getLevel();
+                convertView.setPadding(paddingLeft, padding, padding, padding);
                 return convertView;
             }
         };

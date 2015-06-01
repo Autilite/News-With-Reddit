@@ -9,6 +9,7 @@
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="link_item_padding">8dp</dimen>
     <dimen name="comment_item_padding">4dp</dimen>
+    <dimen name="comment_item_level_padding">10dp</dimen>
     <dimen name="link_title_size">16sp</dimen>
     <dimen name="link_about_size">10sp</dimen>
 </resources>

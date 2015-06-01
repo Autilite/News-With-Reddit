@@ -81,13 +81,43 @@ public abstract class Thing {
             return things;
         }
 
+        private List<Comment> makeCommentReplyListing(JSONObject listing, int level) throws JSONException {
+            if (listing == null || listing.length() == 0) {
+                return new ArrayList<>();
+            }
+            if (!listing.getString("kind").equals("Listing")) {
+                throw new JSONException("Incorrect thing kind");
+            }
+            ArrayList<Comment> comments = new ArrayList<>();
+            JSONArray children = listing.getJSONObject("data").getJSONArray("children");
+            for (int i = 0; i < children.length(); i++) {
+                JSONObject thingObject = children.getJSONObject(i);
+                Comment comment = makeComment(thingObject, level);
+                if (comment != null) {
+                    comments.add(comment);
+                } else {
+                    break;
+                }
+            }
+            return comments;
+        }
+
         private Thing makeComment(JSONObject object) throws JSONException {
+            return makeComment(object, 0);
+        }
+
+        private Comment makeComment(JSONObject object, int level) throws JSONException {
+            // check if the kind is actually a comment
+            String kind = object.getString("kind");
+            if (!kind.equals("t1")) {
+                return null;
+            }
             JSONObject entry = object.getJSONObject("data");
             Comment.CommentBuilder builder = new Comment.CommentBuilder();
             try {
-                // TODO fix unsafe casting
                 builder.setId(entry.getString("id"))
                         // TODO level
+                        .setLevel(level)
                         .setName(entry.getString("name"))
                         .setApproved_by(entry.getString("approved_by"))
                         .setAuthor(entry.getString("author"))
@@ -118,13 +148,12 @@ public abstract class Thing {
                     builder.setNum_reports(entry.getInt("num_reports"));
                 }
                 String replyString = entry.getString("replies");
-                Log.i("TEST", "The string: " + replyString);
                 List<Comment> replies;
                 if (replyString.trim().equals("")) {
                     replies = new ArrayList<>();
                 } else {
                     JSONObject replyObject = new JSONObject(replyString);
-                    replies = (List<Comment>) (List<?>) makeListThing(replyObject);
+                    replies = makeCommentReplyListing(replyObject, level+1);
                 }
                 builder.setReplies(replies);
                 // TODO kind: "more" replies
