@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.autilite.newswithreddit.data.Link;
@@ -37,6 +38,8 @@ public class LinkListFragment extends Fragment {
     private SubredditLinks lolinks;
 
     private LinkItemCallbacks mListener;
+    private ProgressBar mProgressBar;
+    private ViewGroup mContainer;
 
     /**
      * Use this factory method to create a new instance of
@@ -76,6 +79,9 @@ public class LinkListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_link_list, container, false);
         linksList = (ListView) view.findViewById(R.id.link_list);
+        mProgressBar = (ProgressBar) inflater.inflate(R.layout.progress_bar_circular, container, false);
+        mContainer = container;
+
         linksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -101,6 +107,7 @@ public class LinkListFragment extends Fragment {
             // Must execute network tasks outside the UI
             // thread. So create a new thread.
 
+            mContainer.addView(mProgressBar);
             new Thread() {
                 public void run() {
                     links.addAll(lolinks.fetchLinks());
@@ -112,6 +119,7 @@ public class LinkListFragment extends Fragment {
                     linksList.post(new Runnable() {
                         public void run() {
                             createAdapter();
+                            mContainer.removeView(mProgressBar);
                         }
                     });
                 }

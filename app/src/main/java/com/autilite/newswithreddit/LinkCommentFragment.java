@@ -5,11 +5,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.autilite.newswithreddit.data.Comment;
@@ -38,6 +41,9 @@ public class LinkCommentFragment extends Fragment {
     private ListView commentListView;
 
     private LinkCommentListener mListener;
+
+    private ProgressBar mProgressBar;
+    private ViewGroup mContainer;
 
     /**
      * Use this factory method to create a new instance of
@@ -81,6 +87,8 @@ public class LinkCommentFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_link_comment, container, false);
         commentListView = (ListView) view.findViewById(R.id.link_comments);
+        mProgressBar = (ProgressBar) inflater.inflate(R.layout.progress_bar_circular, container, false);
+        mContainer = container;
         return view;
     }
 
@@ -92,6 +100,7 @@ public class LinkCommentFragment extends Fragment {
 
     private void initialize() {
         if (comments.size() == 0) {
+            mContainer.addView(mProgressBar);
             new Thread() {
                 public void run() {
                     collapseComments(comments, srl.fetchTopLevelComments());
@@ -99,6 +108,7 @@ public class LinkCommentFragment extends Fragment {
                         @Override
                         public void run() {
                             createAdapter();
+                            mContainer.removeView(mProgressBar);
                         }
                     });
                 }
