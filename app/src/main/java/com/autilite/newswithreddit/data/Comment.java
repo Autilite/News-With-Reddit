@@ -1,5 +1,7 @@
 package com.autilite.newswithreddit.data;
 
+import java.util.List;
+
 /**
  * Created by kelvin on 5/30/15.
  */
@@ -21,7 +23,8 @@ public class Comment extends Thing { // t1, implements votable, created
     private String link_url;
     private int num_reports;
     private String parent_id;
-    private String replies;     // List<thing> - list of replies to this comment
+    private List<Comment> replies;     // List<thing> - list of replies to this comment
+    // TODO more kind
     private boolean saved;
     private int score;
     private boolean score_hidden;
@@ -36,7 +39,7 @@ public class Comment extends Thing { // t1, implements votable, created
         kind = "t1";
     }
 
-    private Comment(String id, String name, int level, String approved_by, String author, String author_flair_css_class, String author_flare_text, String banned_by, String body, String body_html, String edited, int gilded, boolean likes, String link_author, String link_id, String link_title, String link_url, int num_reports, String parent_id, String replies, boolean saved, int score, boolean score_hidden, String subreddit, String subreddit_id, String distinguished, long created, long created_utc) {
+    private Comment(String id, String name, int level, String approved_by, String author, String author_flair_css_class, String author_flare_text, String banned_by, String body, String body_html, String edited, int gilded, boolean likes, String link_author, String link_id, String link_title, String link_url, int num_reports, String parent_id, List<Comment> replies, boolean saved, int score, boolean score_hidden, String subreddit, String subreddit_id, String distinguished, long created, long created_utc) {
         this.id = id;
         this.name = name;
         this.level = level;
@@ -135,7 +138,7 @@ public class Comment extends Thing { // t1, implements votable, created
         return parent_id;
     }
 
-    public String getReplies() {
+    public List<Comment> getReplies() {
         return replies;
     }
 
@@ -191,7 +194,7 @@ public class Comment extends Thing { // t1, implements votable, created
         private String link_url;
         private int num_reports;
         private String parent_id;
-        private String replies;
+        private List<Comment> replies;
         private boolean saved;
         private int score;
         private boolean score_hidden;
@@ -286,7 +289,7 @@ public class Comment extends Thing { // t1, implements votable, created
             return this;
         }
 
-        public CommentBuilder setReplies(String replies) {
+        public CommentBuilder setReplies(List<Comment> replies) {
             this.replies = replies;
             return this;
         }

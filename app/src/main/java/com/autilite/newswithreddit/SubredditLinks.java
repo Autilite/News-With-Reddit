@@ -98,7 +98,7 @@ public class SubredditLinks {
         return links;
     }
 
-    public List<Comment> fetchComments() {
+    public List<Comment> fetchTopLevelComments() {
         String output = NetworkConnection.readContents(url);
         /**
          * Sample comments page json
@@ -135,7 +135,7 @@ public class SubredditLinks {
            ]
          */
         List<Comment> comments = new ArrayList<>();
-        JSONObject jsonComment = new JSONObject();
+        JSONObject jsonComment;
         try {
             // the first JSONObject is the post info (t3)
             // the second is the Listing of the comments (t1)
@@ -148,7 +148,9 @@ public class SubredditLinks {
                     continue;
                 }
                 Comment comment = (Comment) tf.makeThing(jsonComment);
-                comments.add(comment);
+                if (comment != null) {
+                    comments.add(comment);
+                }
             }
         } catch (JSONException e) {
             Log.e("JSON", e.getMessage(), e);

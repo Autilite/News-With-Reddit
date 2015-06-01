@@ -94,7 +94,7 @@ public class LinkCommentFragment extends Fragment {
         if (comments.size() == 0) {
             new Thread() {
                 public void run() {
-                    comments.addAll(srl.fetchComments());
+                    collapseComments(comments, srl.fetchTopLevelComments());
                     commentListView.post(new Runnable() {
                         @Override
                         public void run() {
@@ -105,6 +105,20 @@ public class LinkCommentFragment extends Fragment {
             }.start();
         } else {
             createAdapter();
+        }
+    }
+
+    /**
+     * Collapses a list of linked list into one in depth first search
+     * @param acc
+     *      The list which accumulates the comments
+     * @param toAdd
+     *      The linked list to collapse
+     */
+    private void collapseComments(List<Comment> acc, List<Comment> toAdd) {
+        for (Comment c : toAdd) {
+            acc.add(c);
+            collapseComments(acc, c.getReplies());
         }
     }
 
