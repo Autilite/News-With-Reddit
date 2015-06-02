@@ -13,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.autilite.newswithreddit.data.Link;
+import com.autilite.newswithreddit.fetcher.LinkFetcher;
+import com.autilite.newswithreddit.fetcher.SubredditLinks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class LinkListFragment extends Fragment {
 
     private String mSubreddit;
     private List<Link> links;
-    private SubredditLinks lolinks;
+    private LinkFetcher fetcher;
 
     private LinkItemCallbacks mListener;
     private ProgressBar mProgressBar;
@@ -51,7 +53,7 @@ public class LinkListFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, subreddit);
         fragment.setArguments(args);
-        fragment.lolinks = new SubredditLinks(subreddit);
+        fragment.fetcher = new LinkFetcher(subreddit);
         fragment.mSubreddit = subreddit;
         return fragment;
     }
@@ -102,7 +104,7 @@ public class LinkListFragment extends Fragment {
             mContainer.addView(mProgressBar);
             new Thread() {
                 public void run() {
-                    links.addAll(lolinks.fetchLinks());
+                    links.addAll(fetcher.fetch());
 
                     // UI elements should be accessed only on the primary thread
                     // Run adapter on the list view

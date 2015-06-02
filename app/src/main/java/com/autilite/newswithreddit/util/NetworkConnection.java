@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -16,36 +17,26 @@ public class NetworkConnection {
     private static final int TIMEOUT = 30000; // 30s
     private static final String TAG = "CON";
 
-    public static HttpURLConnection getConnection (String url) {
+    public static HttpURLConnection getConnection (String url) throws IOException {
         HttpURLConnection con = null;
-        try {
-            con = (HttpURLConnection) new URL(url).openConnection();
-            con.setReadTimeout(TIMEOUT);
-            con.setRequestProperty("User-Agent", "android:com.autilite.newswithreddit:v1 (by /u/null)");
-            Log.d(TAG, "url: " + url);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Connection failed", e);
-        }
+        con = (HttpURLConnection) new URL(url).openConnection();
+        con.setReadTimeout(TIMEOUT);
+        con.setRequestProperty("User-Agent", "android:com.autilite.newswithreddit:v1 (by /u/null)");
+        Log.d(TAG, "url: " + url);
         return con;
     }
 
-    public static String readContents(String url) {
+    public static String readContents(String url) throws IOException {
         HttpURLConnection con = getConnection(url);
         if (con == null)
             return null;
         StringBuilder sb = new StringBuilder();
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d(TAG, "Connection read failed", e);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String line = "";
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
         }
+        reader.close();
         return sb.toString();
     }
 }

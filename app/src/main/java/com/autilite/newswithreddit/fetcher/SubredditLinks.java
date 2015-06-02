@@ -1,4 +1,4 @@
-package com.autilite.newswithreddit;
+package com.autilite.newswithreddit.fetcher;
 
 import android.util.Log;
 
@@ -11,6 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,7 @@ public class SubredditLinks {
     private static final String SUBREDDIT_TEMPLATE = "http://www.reddit.com/r/SUBREDDIT/.json?raw_json=1";
     private static final String COMMENT_TEMPLATE = "http://www.reddit.com/r/SUBREDDIT/comments/COMMENT_ID/.json?raw_json=1";
     // raw_json gives unicode in place of encoding
+    private static final String TAG = "Fetching";
 
     private String subreddit;
     private String comment_link_id;
@@ -77,23 +80,17 @@ public class SubredditLinks {
         Log.v("URL", "Generated url: " + url);
     }
 
-    public List<Link> fetchLinks() {
-        String output = NetworkConnection.readContents(url);
-        List<Link> links = new ArrayList<>();
-        JSONObject jsonLink = new JSONObject();
-        try {
-            List<Thing> things = Thing.getThingFactory().makeListThing(new JSONObject(output));
-            for (Thing thing : things) {
-                links.add((Link) thing);
-            }
-        } catch (JSONException e) {
-            Log.e("JSON", "JSON parse exception:\n" + jsonLink, e);
-        }
-        return links;
-    }
-
     public List<Comment> fetchTopLevelComments() {
-        String output = NetworkConnection.readContents(url);
+        String output;
+        try {
+            output = NetworkConnection.readContents(url);
+        } catch (MalformedURLException e) {
+            Log.w(TAG, "Invalid URL: " + e.getMessage());
+            return new ArrayList<>();
+        } catch (IOException e) {
+            Log.w(TAG, "Connection error", e);
+            return new ArrayList<>();
+        }
         /**
          * Sample comments page json
          * [
@@ -153,7 +150,16 @@ public class SubredditLinks {
     }
 
     public static List<String> fetchDefaultSubreddits() {
-        String output = NetworkConnection.readContents(DEFAULT_SUBREDDITS);
+        String output;
+        try {
+            output = NetworkConnection.readContents(DEFAULT_SUBREDDITS);
+        } catch (MalformedURLException e) {
+            Log.w(TAG, "Invalid URL: " + e.getMessage());
+            return new ArrayList<>();
+        } catch (IOException e) {
+            Log.w(TAG, "Connection error", e);
+            return new ArrayList<>();
+        }
         List<String> subreddits = new ArrayList<>();
         JSONObject jsonSubreddit = new JSONObject();
         try {
