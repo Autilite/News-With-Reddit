@@ -22,6 +22,7 @@ public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, LinkListFragment.LinkItemCallbacks,
         LinkCommentFragment.LinkCommentListener {
 
+    private static final String TAG = MainActivity.class.getName();
     public static final String COMMENT_QUERY = "com.autilite.newswithreddit.COMMENT_ID";
     public static final String COMMENT_SUBREDDIT = "com.autilite.newswithreddit.COMMENT_SUBREDDIT";
     /**
@@ -52,6 +53,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(String subreddit) {
+        Log.i(TAG, "Subreddit \"" + subreddit + "\" selected");
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
@@ -62,7 +64,8 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onLinkSelect(Link link) {
-        Log.i("LINK", link.getTitle() + "(" + link.getSubreddit() + ") was selected.\n" + link.getPermalink());
+        Log.i(TAG, link.getTitle() + " (" + link.getSubreddit() + ") was selected.\nPermalink: "
+                + link.getPermalink());
         Intent intent = new Intent(this, CommentActivity.class);
         intent.putExtra(COMMENT_QUERY, link.getId());
         intent.putExtra(COMMENT_SUBREDDIT, link.getSubreddit());

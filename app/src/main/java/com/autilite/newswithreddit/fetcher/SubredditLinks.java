@@ -46,7 +46,7 @@ public class SubredditLinks {
     private static final String SUBREDDIT_TEMPLATE = "http://www.reddit.com/r/SUBREDDIT/.json?raw_json=1";
     private static final String COMMENT_TEMPLATE = "http://www.reddit.com/r/SUBREDDIT/comments/COMMENT_ID/.json?raw_json=1";
     // raw_json gives unicode in place of encoding
-    private static final String TAG = "Fetching";
+    private static final String TAG = SubredditLinks.class.getName();
 
     private String subreddit;
     private String comment_link_id;
@@ -77,7 +77,7 @@ public class SubredditLinks {
             url = COMMENT_TEMPLATE.replace("SUBREDDIT", subreddit)
                     .replace("COMMENT_ID", comment_link_id);
         }
-        Log.v("URL", "Generated url: " + url);
+        Log.v(TAG, "Generated url: " + url);
     }
 
     public List<Comment> fetchTopLevelComments() {
@@ -135,7 +135,7 @@ public class SubredditLinks {
             for (int i = 0; i < children.length(); i++) {
                 jsonComment = children.getJSONObject(i);
                 if (!jsonComment.getString("kind").equals("t1")) {
-                    Log.w("JSON", "Link comment is of the wrong kind:\n" + jsonComment);
+                    Log.w(TAG, "Link comment is of the wrong kind:\n" + jsonComment);
                     continue;
                 }
                 Comment comment = (Comment) tf.makeThing(jsonComment);
@@ -144,7 +144,7 @@ public class SubredditLinks {
                 }
             }
         } catch (JSONException e) {
-            Log.e("JSON", e.getMessage(), e);
+            Log.e(TAG, e.getMessage(), e);
         }
         return comments;
     }
@@ -170,7 +170,7 @@ public class SubredditLinks {
                 subreddits.add(jsonSubreddit.getString("display_name"));
             }
         } catch (JSONException e) {
-            Log.e("JSON", "JSON parse exception:\n" + jsonSubreddit, e);
+            Log.e(TAG, "JSON parse exception:\n" + jsonSubreddit, e);
         }
         return subreddits;
     }

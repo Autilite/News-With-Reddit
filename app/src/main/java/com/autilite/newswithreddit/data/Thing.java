@@ -39,6 +39,8 @@ public abstract class Thing {
 
     public static class ThingFactory {
 
+        private static final String TAG = ThingFactory.class.getName();
+
         public Thing makeThing(JSONObject object) throws JSONException {
             String kind = object.getString("kind");
             switch (kind){
@@ -52,7 +54,7 @@ public abstract class Thing {
                 case "t5":
                     break;
                 case "more":
-                    Log.d("Kind", "More kind " + object.toString());
+                    Log.d(TAG, "Parsed \"more\" kind" + object.toString());
                     break;
                 default:
                     return null;
@@ -102,19 +104,19 @@ public abstract class Thing {
             return comments;
         }
 
-        private Thing makeComment(JSONObject object) throws JSONException {
+        private Thing makeComment(JSONObject object) {
             return makeComment(object, 0);
         }
 
-        private Comment makeComment(JSONObject object, int level) throws JSONException {
-            // check if the kind is actually a comment
-            String kind = object.getString("kind");
-            if (!kind.equals("t1")) {
-                return null;
-            }
-            JSONObject entry = object.getJSONObject("data");
-            Comment.CommentBuilder builder = new Comment.CommentBuilder();
+        private Comment makeComment(JSONObject object, int level) {
             try {
+                // check if the kind is actually a comment
+                String kind = object.getString("kind");
+                if (!kind.equals("t1")) {
+                    return null;
+                }
+                JSONObject entry = object.getJSONObject("data");
+                Comment.CommentBuilder builder = new Comment.CommentBuilder();
                 builder.setId(entry.getString("id"))
                         // TODO level
                         .setLevel(level)
@@ -159,49 +161,54 @@ public abstract class Thing {
                 // TODO kind: "more" replies
                 return builder.createComment();
             } catch (JSONException e) {
-                Log.d("JSON", e.getMessage() + "\n" + object.toString(), e);
-                throw e;
+                Log.d(TAG, "Error with JSONObject\n" + object.toString(), e);
+                return null;
             }
         }
 
-        private Thing makeLink(JSONObject object) throws JSONException {
-            JSONObject entry = object.getJSONObject("data");
-            Link.LinkBuilder builder = new Link.LinkBuilder()
-                    .setId(entry.getString("id"))
-                    .setName(entry.getString("name"))
-                    .setAuthor(entry.getString("author"))
-                    .setAuthor_flair_css_class(entry.getString("author_flair_css_class"))
-                    .setAuthor_flare_text(entry.getString("author_flair_text"))
-                    .setClicked(entry.getString("clicked"))
-                    .setDomain(entry.getString("domain"))
-                    .setHidden(entry.getBoolean("hidden"))
-                    .setIs_self(entry.getBoolean("is_self"))
+        private Thing makeLink(JSONObject object) {
+            try {
+                JSONObject entry = object.getJSONObject("data");
+                Link.LinkBuilder builder = new Link.LinkBuilder()
+                        .setId(entry.getString("id"))
+                        .setName(entry.getString("name"))
+                        .setAuthor(entry.getString("author"))
+                        .setAuthor_flair_css_class(entry.getString("author_flair_css_class"))
+                        .setAuthor_flare_text(entry.getString("author_flair_text"))
+                        .setClicked(entry.getString("clicked"))
+                        .setDomain(entry.getString("domain"))
+                        .setHidden(entry.getBoolean("hidden"))
+                        .setIs_self(entry.getBoolean("is_self"))
 //                    .setLikes(entry.getBoolean("likes"))  // true up; false down; null none
-                    .setLink_flair_css_class(entry.getString("link_flair_css_class"))
-                    .setLink_flair_text(entry.getString("link_flair_text"))
-                    // TODO Object media; // streaming video. info about video and origin
-                    //Object media_embed; // technical embed specific info
-                    .setNum_comments(entry.getInt("num_comments"))
-                    .setOver_18(entry.getBoolean("over_18"))
-                    .setPermalink(entry.getString("permalink"))
-                    .setSaved(entry.getBoolean("saved"))
-                    .setScore(entry.getInt("score"))
-                    .setSelftext(entry.getString("selftext"))
-                    .setSelftext_html(entry.getString("selftext_html"))
-                    .setSubreddit(entry.getString("subreddit"))
-                    .setSubreddit_id(entry.getString("subreddit_id"))
-                    .setThumbnail(entry.getString("thumbnail"))
-                    .setTitle(entry.getString("title"))
-                    .setUrl(entry.getString("url"))
-                    // TODO .setEdited(entry.getLong("edited")) -- can be boolean or long
-                    .setDistinguished(entry.getString("distinguished"))
-                    .setStickied(entry.getBoolean("stickied"))
-                    .setCreated(entry.getLong("created"))
-                    .setCreated_utc(entry.getLong("created_utc"));
-            if (!String.valueOf(entry.get("likes")).equals("null")) {
-                builder.setLikes(entry.getBoolean("likes"));
+                        .setLink_flair_css_class(entry.getString("link_flair_css_class"))
+                        .setLink_flair_text(entry.getString("link_flair_text"))
+                                // TODO Object media; // streaming video. info about video and origin
+                                //Object media_embed; // technical embed specific info
+                        .setNum_comments(entry.getInt("num_comments"))
+                        .setOver_18(entry.getBoolean("over_18"))
+                        .setPermalink(entry.getString("permalink"))
+                        .setSaved(entry.getBoolean("saved"))
+                        .setScore(entry.getInt("score"))
+                        .setSelftext(entry.getString("selftext"))
+                        .setSelftext_html(entry.getString("selftext_html"))
+                        .setSubreddit(entry.getString("subreddit"))
+                        .setSubreddit_id(entry.getString("subreddit_id"))
+                        .setThumbnail(entry.getString("thumbnail"))
+                        .setTitle(entry.getString("title"))
+                        .setUrl(entry.getString("url"))
+                                // TODO .setEdited(entry.getLong("edited")) -- can be boolean or long
+                        .setDistinguished(entry.getString("distinguished"))
+                        .setStickied(entry.getBoolean("stickied"))
+                        .setCreated(entry.getLong("created"))
+                        .setCreated_utc(entry.getLong("created_utc"));
+                if (!String.valueOf(entry.get("likes")).equals("null")) {
+                    builder.setLikes(entry.getBoolean("likes"));
+                }
+                return builder.createLink();
+            } catch (JSONException e) {
+                Log.d(TAG, "Error with JSONObject\n" + object.toString(), e);
+                return null;
             }
-            return builder.createLink();
         }
     }
 }

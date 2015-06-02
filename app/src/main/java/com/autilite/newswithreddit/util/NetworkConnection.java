@@ -1,5 +1,6 @@
 package com.autilite.newswithreddit.util;
 
+import android.net.Network;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -15,14 +16,14 @@ import java.net.URL;
 public class NetworkConnection {
 
     private static final int TIMEOUT = 30000; // 30s
-    private static final String TAG = "CON";
+    private static final String TAG = NetworkConnection.class.getName();
 
     public static HttpURLConnection getConnection (String url) throws IOException {
         HttpURLConnection con = null;
         con = (HttpURLConnection) new URL(url).openConnection();
         con.setReadTimeout(TIMEOUT);
         con.setRequestProperty("User-Agent", "android:com.autilite.newswithreddit:v1 (by /u/null)");
-        Log.d(TAG, "url: " + url);
+        Log.i(TAG, "Connected to URL: " + url);
         return con;
     }
 
