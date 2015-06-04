@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,12 @@ public class LinkListFragment extends Fragment {
     private LinkItemCallbacks mListener;
     private ProgressBar mProgressBar;
     private ViewGroup mContainer;
+
+    private int firstVisibleItem, visibleItemCount, totalItemCount;
+    private int visibleThreshold = 5;
+    private int previousItemCount = 0;
+    private boolean loading = true;
+    private static final String TAG = LinkListFragment.class.getName();
 
     /**
      * Use this factory method to create a new instance of
@@ -80,6 +87,7 @@ public class LinkListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_link_list, container, false);
         mProgressBar = (ProgressBar) inflater.inflate(R.layout.progress_bar_circular, container, false);
         mContainer = container;
+        container.addView(mProgressBar);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.link_recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -87,16 +95,41 @@ public class LinkListFragment extends Fragment {
         mAdapter = new LinkAdapter(links);
         mRecyclerView.setAdapter(mAdapter);
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleItemCount = mLayoutManager.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                firstVisibleItem = ((LinearLayoutManager) mLayoutManager).findFirstVisibleItemPosition();
+
+                if (loading) {
+                    if (totalItemCount > previousItemCount) {
+                        previousItemCount = totalItemCount;
+                        Log.v(TAG, "Loading links done.");
+                        loading = false;
+                    }
+                } else if ((totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    loading = true;
+                    Log.v(TAG, "Loading new link page");
+                    fetchLinks();
+                }
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (links.size() != 0) {
-            return;
+        if (links.size() == 0) {
+            fetchLinks();
         }
-        mContainer.addView(mProgressBar);
+    }
+
+    private void fetchLinks() {
+        Log.v(TAG, "Fetching links");
         new Thread() {
             public void run() {
                 links.addAll(fetcher.fetch());

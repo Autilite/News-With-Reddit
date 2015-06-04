@@ -31,6 +31,9 @@ public class LinkFetcher extends RedditFetcher{
         } else {
             url = REDDIT_BASE_URL + REDDIT_SUBREDDIT_BASE + urlParams + JSON_FORMAT;
         }
+        if (!after.equals("")) {
+            url += "?after=" + after;
+        }
         Log.i(TAG, "Generated url: " + url);
     }
 
@@ -48,11 +51,13 @@ public class LinkFetcher extends RedditFetcher{
         }
         List<Link> links = new ArrayList<>();
         try {
-            List<Thing> things = Thing.getThingFactory().makeListThing(new JSONObject(output));
+            JSONObject listing = new JSONObject(output);
+            List<Thing> things = Thing.getThingFactory().makeListThing(listing);
             for (Thing thing : things) {
                 if (thing instanceof Link)
                     links.add((Link) thing);
             }
+            after = listing.getJSONObject("data").getString("after");
         } catch (JSONException e) {
             Log.e(TAG, "JSON parsing or JSONObject construction fail.", e);
         }

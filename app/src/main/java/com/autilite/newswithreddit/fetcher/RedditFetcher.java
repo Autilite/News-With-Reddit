@@ -13,13 +13,16 @@ public abstract class RedditFetcher {
     public final String REDDIT_SUBREDDIT_BASE = "/r/";
     public final String REDDIT_USER_BASE = "/u/";
     public final String JSON_FORMAT = ".json";
+    public final String paramAfter = "?after=";
 
     protected String url;
     protected String urlParams;
+    protected String after;
 
     public RedditFetcher(String permalink) {
         this.url = REDDIT_BASE_URL + permalink;
         this.urlParams = permalink;
+        after = "";
     }
 
     public String getUrl() {
