@@ -5,11 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -37,7 +38,9 @@ public class LinkCommentFragment extends Fragment {
 
     private List<Comment> comments;
     private SubredditLinks srl;
-    private ListView commentListView;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView.Adapter mAdapter;
 
     private LinkCommentListener mListener;
 
@@ -85,36 +88,42 @@ public class LinkCommentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_link_comment, container, false);
-        commentListView = (ListView) view.findViewById(R.id.link_comments);
         mProgressBar = (ProgressBar) inflater.inflate(R.layout.progress_bar_circular, container, false);
+        container.addView(mProgressBar);
         mContainer = container;
+
+        // Setup the comments view
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.comment_recycler_view);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mAdapter = new CommentAdapter(getActivity(), comments);
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initialize();
+        if (comments.size() == 0) {
+            fetchComments();
+        }
     }
 
-    private void initialize() {
-        if (comments.size() == 0) {
-            mContainer.addView(mProgressBar);
-            new Thread() {
-                public void run() {
-                    collapseComments(comments, srl.fetchTopLevelComments());
-                    commentListView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            createAdapter();
-                            mContainer.removeView(mProgressBar);
-                        }
-                    });
-                }
-            }.start();
-        } else {
-            createAdapter();
-        }
+    private void fetchComments() {
+        new Thread() {
+            public void run() {
+                collapseComments(comments, srl.fetchTopLevelComments());
+                mRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mContainer.removeView(mProgressBar);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }.start();
     }
 
     /**
@@ -129,47 +138,6 @@ public class LinkCommentFragment extends Fragment {
             acc.add(c);
             collapseComments(acc, c.getReplies());
         }
-    }
-
-    private void createAdapter() {
-        if (getActivity() == null)
-            return;
-
-        ArrayAdapter<Comment> adapter = new ArrayAdapter<Comment>(getActivity(),
-                R.layout.fragment_comment_item, comments) {
-            // TODO fragment comment layout
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                if (convertView == null) {
-                    convertView = getActivity()
-                            .getLayoutInflater()
-                            .inflate(R.layout.fragment_comment_item, null);
-                }
-
-                TextView commentBody = (TextView) convertView.findViewById(R.id.comment_body);
-                TextView commentAuthor = (TextView) convertView.findViewById(R.id.comment_author);
-                TextView commentPoints = (TextView) convertView.findViewById(R.id.comment_points);
-                TextView commentTime = (TextView) convertView.findViewById(R.id.comment_time_ago);
-
-                Comment com = comments.get(position);
-                commentBody.setText(com.getBody());
-                commentAuthor.setText(com.getAuthor());
-                if (com.isScore_hidden()) {
-                    commentPoints.setText(R.string.score_hidden);
-                } else {
-                    commentPoints.setText(com.getScore() + " points");
-                }
-
-                int padding = getResources().getDimensionPixelSize(R.dimen.comment_item_padding);
-                int paddingLeft = padding + getResources().
-                        getDimensionPixelSize(R.dimen.comment_item_level_padding)
-                        * com.getLevel();
-                convertView.setPadding(paddingLeft, padding, padding, padding);
-                return convertView;
-            }
-        };
-        commentListView.setAdapter(adapter);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
