@@ -1,19 +1,14 @@
 package com.autilite.newswithreddit;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import com.autilite.newswithreddit.data.Link;
@@ -42,7 +37,6 @@ public class MainActivity extends ActionBarActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -57,9 +51,9 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.action_bar_container, StatusBarFragment.newInstance(subreddit))
                 .replace(R.id.container, LinkListFragment.newInstance(subreddit))
                 .commit();
+        onSectionAttached(subreddit);
     }
 
     @Override
@@ -115,46 +109,6 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         // TODO
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class StatusBarFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SUBREDDIT = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static StatusBarFragment newInstance(String subreddit) {
-            StatusBarFragment fragment = new StatusBarFragment();
-            Bundle args = new Bundle();
-            args.putString(ARG_SUBREDDIT, subreddit);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public StatusBarFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getString(ARG_SUBREDDIT));
-        }
     }
 
 }

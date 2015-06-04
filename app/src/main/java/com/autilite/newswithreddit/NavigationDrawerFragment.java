@@ -101,25 +101,31 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+
+        // Hard code static default subreddits
+        String[] defaultSubs = {"/", "all"};
+        mSubreddits = new ArrayList<>(Arrays.asList(defaultSubs));
+
+        mDrawerListView.setAdapter(new ArrayAdapter<>(
+                getActionBar().getThemedContext(),
+                R.layout.subreddit_list_item,
+                android.R.id.text1,
+                mSubreddits
+        ));
+
+        // Select either the default item (0) or the last selected item.
+        selectItem(mCurrentSelectedPosition);
+
         new Thread () {
             @Override
             public void run() {
-                // Display default subreddits on the nav drawer
-                String[] hardCodedSubreddits = {"/", "all"};
-                mSubreddits = new ArrayList<String>(Arrays.asList(hardCodedSubreddits));
+                // Fetch default subs over a network on a new thread
                 mSubreddits.addAll(SubredditLinks.fetchDefaultSubreddits());
                 mDrawerListView.post(new Runnable() {
                     @Override
                     public void run() {
-                        mDrawerListView.setAdapter(new ArrayAdapter<>(
-                                getActionBar().getThemedContext(),
-                                R.layout.subreddit_list_item,
-                                android.R.id.text1,
-                                mSubreddits
-                        ));
-
-                        // Select either the default item (0) or the last selected item.
-                        selectItem(mCurrentSelectedPosition);
+                        // Must touch the UI on the UI thread
+                        ((ArrayAdapter) mDrawerListView.getAdapter()).notifyDataSetChanged();
                     }
                 });
             }
