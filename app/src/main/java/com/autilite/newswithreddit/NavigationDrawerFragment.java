@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.autilite.newswithreddit.fetcher.SubredditLinks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,6 +58,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
+    private List<String> mSubreddits;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -102,16 +105,17 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void run() {
                 // Display default subreddits on the nav drawer
-                final List<String> subreddits = SubredditLinks.fetchDefaultSubreddits();
+                String[] hardCodedSubreddits = {"/", "all"};
+                mSubreddits = new ArrayList<String>(Arrays.asList(hardCodedSubreddits));
+                mSubreddits.addAll(SubredditLinks.fetchDefaultSubreddits());
                 mDrawerListView.post(new Runnable() {
                     @Override
                     public void run() {
-                        subreddits.add(0, "/");
                         mDrawerListView.setAdapter(new ArrayAdapter<>(
                                 getActionBar().getThemedContext(),
                                 R.layout.subreddit_list_item,
                                 android.R.id.text1,
-                                subreddits
+                                mSubreddits
                         ));
 
                         // Select either the default item (0) or the last selected item.
