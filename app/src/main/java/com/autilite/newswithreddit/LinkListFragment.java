@@ -3,18 +3,16 @@ package com.autilite.newswithreddit;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.autilite.newswithreddit.data.Link;
 import com.autilite.newswithreddit.fetcher.LinkFetcher;
-import com.autilite.newswithreddit.fetcher.SubredditLinks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +30,9 @@ public class LinkListFragment extends Fragment {
     private static final String ARG_PARAM1 = "SUBREDDIT";
 
     private ListView linksList;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private String mSubreddit;
     private List<Link> links;
@@ -77,93 +78,45 @@ public class LinkListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_link_list, container, false);
-        linksList = (ListView) view.findViewById(R.id.link_list);
         mProgressBar = (ProgressBar) inflater.inflate(R.layout.progress_bar_circular, container, false);
         mContainer = container;
 
-        linksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Link link = (Link) parent.getItemAtPosition(position);
-                mListener.onLinkSelect(link);
-            }
-        });
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.link_recycler_view);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new LinkAdapter(links);
+        mRecyclerView.setAdapter(mAdapter);
+
         return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initialize();
-    }
-
-    private void initialize() {
-        if (links.size() == 0) {
-            // Can't fetch likes over network on the UI thread
-            // So make a new one
-            mContainer.addView(mProgressBar);
-            new Thread() {
-                public void run() {
-                    links.addAll(fetcher.fetch());
-
-                    // UI elements should be accessed only on the primary thread
-                    // Run adapter on the list view
-                    linksList.post(new Runnable() {
-                        public void run() {
-                            createAdapter();
-                            mContainer.removeView(mProgressBar);
-                        }
-                    });
-                }
-            }.start();
-        } else {
-            createAdapter();
-        }
-    }
-
-    private void createAdapter(){
-        // Make sure this fragment is still a part of the activity.
-        if (getActivity() == null)
+        if (links.size() != 0) {
             return;
+        }
+        mContainer.addView(mProgressBar);
+        new Thread() {
+            public void run() {
+                links.addAll(fetcher.fetch());
 
-        ArrayAdapter<Link> adapter = new ArrayAdapter<Link>(getActivity(), R.layout.fragment_link_item, links) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                if (convertView == null) {
-                    convertView = getActivity()
-                            .getLayoutInflater()
-                            .inflate(R.layout.fragment_link_item, null);
-                }
-
-                TextView linkTitle = (TextView) convertView.findViewById(R.id.link_title);
-                TextView linkStats = (TextView) convertView.findViewById(R.id.link_stats);
-                TextView linkDetails = (TextView) convertView.findViewById(R.id.link_author);
-
-                String delim = " - ";
-                Link link = links.get(position);
-                StringBuilder stats = new StringBuilder();
-                stats.append(link.getNum_comments()).append(" comments")
-                        .append(delim).append(link.getScore()).append(" pts");
-                StringBuilder author = new StringBuilder();
-                author.append(link.getAuthor())
-                        .append(delim).append(link.getSubreddit())
-                        .append(delim).append(link.getDomain());
-
-
-                linkTitle.setText(link.getTitle());
-                linkStats.setText(stats.toString());
-                linkDetails.setText(author.toString());
-                return convertView;
+                // UI elements should be accessed only on the primary thread
+                // Run adapter on the list view
+                mRecyclerView.post(new Runnable() {
+                    public void run() {
+                        mContainer.removeView(mProgressBar);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
             }
-        };
-        linksList.setAdapter(adapter);
+        }.start();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Link link) {
-        if (mListener != null) {
-            mListener.onLinkSelect(link);
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((LinkAdapter) mAdapter).setOnLinkClickListener(mListener);
     }
 
     @Override
