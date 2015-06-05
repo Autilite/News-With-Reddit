@@ -2,6 +2,7 @@ package com.autilite.newswithreddit.fetcher;
 
 import android.util.Log;
 
+import com.autilite.newswithreddit.BuildConfig;
 import com.autilite.newswithreddit.data.Comment;
 import com.autilite.newswithreddit.data.Link;
 import com.autilite.newswithreddit.data.Thing;
@@ -52,6 +53,8 @@ public class SubredditLinks {
     private String comment_link_id;
     private String url;
 
+    private Link link;
+
     /**
      * Class for fetching links from a subreddit.
      * @param subreddit
@@ -78,6 +81,47 @@ public class SubredditLinks {
                     .replace("COMMENT_ID", comment_link_id);
         }
         Log.v(TAG, "Generated url: " + url);
+    }
+
+    public Link getLink() {
+        if (link == null) {
+            link = fetchLink();
+        }
+        return link;
+    }
+
+    public Link fetchLink() {
+        String output;
+        try {
+            output = NetworkConnection.readContents(url);
+        } catch (MalformedURLException e) {
+            Log.w(TAG, "Invalid URL: " + e.getMessage());
+            return null;
+        } catch (IOException e) {
+            Log.w(TAG, "Connection error", e);
+            return null;
+        }
+        Thing.ThingFactory tf = Thing.getThingFactory();
+
+        // Make the link
+        Link link = null;
+        try {
+            JSONArray children = new JSONArray(output).getJSONObject(0).getJSONObject("data").getJSONArray("children");
+            if (BuildConfig.DEBUG && !(children.length() == 1)) {
+                throw new AssertionError("There was more than one link parsed in the comments");
+            }
+            // the first JSONObject is the post info (t3)
+            // the second is the Listing of the comments (t1)
+            JSONObject linkObj = children.getJSONObject(0);
+            if (!linkObj.getString("kind").equals("t3")) {
+                Log.w(TAG, "Link comment is of the wrong kind:\n" + linkObj);
+            } else {
+                link = (Link) tf.makeThing(linkObj);
+            }
+        } catch (JSONException e) {
+            Log.w(TAG, e);
+        }
+        return link;
     }
 
     public List<Comment> fetchTopLevelComments() {
@@ -125,13 +169,33 @@ public class SubredditLinks {
             }
            ]
          */
+        Thing.ThingFactory tf = Thing.getThingFactory();
+
+        // Make the link
+        try {
+            JSONArray children = new JSONArray(output).getJSONObject(0).getJSONObject("data").getJSONArray("children");
+            if (BuildConfig.DEBUG && !(children.length() == 1)) {
+                throw new AssertionError("There was more than one link parsed in the comments");
+            }
+            // the first JSONObject is the post info (t3)
+            // the second is the Listing of the comments (t1)
+            JSONObject linkObj = children.getJSONObject(0);
+            if (!linkObj.getString("kind").equals("t3")) {
+                Log.w(TAG, "Link comment is of the wrong kind:\n" + linkObj);
+            } else {
+                link = (Link) tf.makeThing(linkObj);
+            }
+        } catch (JSONException e) {
+            Log.w(TAG, e);
+        }
+
+        // Make the list of comments
         List<Comment> comments = new ArrayList<>();
         JSONObject jsonComment;
         try {
             // the first JSONObject is the post info (t3)
             // the second is the Listing of the comments (t1)
             JSONArray children = new JSONArray(output).getJSONObject(1).getJSONObject("data").getJSONArray("children");
-            Thing.ThingFactory tf = Thing.getThingFactory();
             for (int i = 0; i < children.length(); i++) {
                 jsonComment = children.getJSONObject(i);
                 if (!jsonComment.getString("kind").equals("t1")) {
