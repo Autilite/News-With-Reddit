@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by kelvin on 01/06/15.
  */
-public abstract class RedditFetcher {
+public abstract class RedditFetcher<T extends Thing> {
 
     public final String REDDIT_BASE_URL = "http://www.reddit.com";
     public final String REDDIT_SUBREDDIT_BASE = "/r/";
@@ -30,5 +30,7 @@ public abstract class RedditFetcher {
     }
 
     public abstract void generateUrl();
+
+    public abstract List<T> fetch();
 
 }
