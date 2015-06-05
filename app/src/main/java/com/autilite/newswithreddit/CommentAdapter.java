@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by kelvin on 03/06/15.
  */
-public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentHolder> {
+public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_LINK = 0;
     private static final int TYPE_COMMENT = 1;
     private List<Comment> comments;
@@ -39,32 +39,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
     }
 
     @Override
-    public CommentHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         if (i == TYPE_LINK) {
             View view = LayoutInflater.from(viewGroup.getContext()).
                     inflate(R.layout.fragment_link_item, viewGroup, false);
-            return new CommentHolder(view, i);
+            return new LinkHolder(view);
         } else {
             View view = LayoutInflater.from(viewGroup.getContext()).
                     inflate(R.layout.fragment_comment_item, viewGroup, false);
-            return new CommentHolder(view, i);
+            return new CommentHolder(view);
         }
     }
 
     @Override
-    public void onBindViewHolder(CommentHolder commentHolder, int i) {
-        if (i == TYPE_LINK) {
-            String delim = " - ";
-            commentHolder.mTitle.setText(link.getTitle());
-            commentHolder.mStats.setText(String.valueOf(link.getNum_comments()) + " comments" + delim +
-                    link.getScore() + " pts");
-            commentHolder.mDetails.setText(link.getAuthor() + delim +
-                    link.getSubreddit() + delim +
-                    link.getDomain());
-        } else {
-            // Since entry one is the link header, with respect to the Comment list,
-            // i is the entry starting at index 1
-            Comment com = comments.get(i-1);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof CommentHolder) {
+            Comment com = comments.get(position-1);
+            CommentHolder commentHolder = (CommentHolder) holder;
 
             commentHolder.mBody.setText(com.getBody());
             commentHolder.mAuthor.setText(com.getAuthor());
@@ -73,10 +64,20 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
             } else {
                 commentHolder.mPoints.setText(com.getScore() + " points");
             }
+            // Set padding to simulate nested levels
             int padding = context.getResources().getDimensionPixelSize(R.dimen.comment_item_padding);
             int paddingLeft = context.getResources().getDimensionPixelSize(R.dimen.comment_item_level_padding)
                     * com.getLevel() + padding;
             commentHolder.itemView.setPadding(paddingLeft, padding, padding, padding);
+        } else if (holder instanceof LinkHolder) {
+            String delim = " - ";
+            LinkHolder linkHolder = (LinkHolder) holder;
+            linkHolder.mTitle.setText(link.getTitle());
+            linkHolder.mStats.setText(String.valueOf(link.getNum_comments()) + " comments" + delim +
+                    link.getScore() + " pts");
+            linkHolder.mDetails.setText(link.getAuthor() + delim +
+                    link.getSubreddit() + delim +
+                    link.getDomain());
         }
     }
 
@@ -92,22 +93,25 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
         private TextView mBody;
         private TextView mTime;
 
+        public CommentHolder(View itemView) {
+            super(itemView);
+            mAuthor = (TextView) itemView.findViewById(R.id.comment_author);
+            mPoints = (TextView) itemView.findViewById(R.id.comment_points);
+            mBody = (TextView) itemView.findViewById(R.id.comment_body);
+            mTime = (TextView) itemView.findViewById(R.id.comment_time_ago);
+        }
+    }
+
+    public class LinkHolder extends RecyclerView.ViewHolder {
         private TextView mTitle;
         private TextView mStats;
         private TextView mDetails;
 
-        public CommentHolder(View itemView, int viewType) {
+        public LinkHolder(View itemView) {
             super(itemView);
-            if (viewType == TYPE_LINK) {
-                mTitle = (TextView) itemView.findViewById(R.id.link_title);
-                mStats = (TextView) itemView.findViewById(R.id.link_stats);
-                mDetails = (TextView) itemView.findViewById(R.id.link_author);
-            } else {
-                mAuthor = (TextView) itemView.findViewById(R.id.comment_author);
-                mPoints = (TextView) itemView.findViewById(R.id.comment_points);
-                mBody = (TextView) itemView.findViewById(R.id.comment_body);
-                mTime = (TextView) itemView.findViewById(R.id.comment_time_ago);
-            }
+            mTitle = (TextView) itemView.findViewById(R.id.link_title);
+            mStats = (TextView) itemView.findViewById(R.id.link_stats);
+            mDetails = (TextView) itemView.findViewById(R.id.link_author);
         }
     }
 
