@@ -31,4 +31,15 @@
         android:textAppearance="@style/linkSecondary"
         />
 
+    <TextView
+        android:id="@+id/link_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/link_author"
+        android:visibility="gone"
+        android:textAppearance="@style/linkBody"
+        android:background="@drawable/link_selftext_border"
+        />
+
+
 </RelativeLayout>

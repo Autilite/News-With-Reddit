@@ -78,6 +78,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             linkHolder.mDetails.setText(link.getAuthor() + delim +
                     link.getSubreddit() + delim +
                     link.getDomain());
+            if (!link.getSelftext().equals("")) {
+                linkHolder.mBody.setText(link.getSelftext());
+                linkHolder.mBody.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -106,12 +110,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView mTitle;
         private TextView mStats;
         private TextView mDetails;
+        private TextView mBody;
 
         public LinkHolder(View itemView) {
             super(itemView);
             mTitle = (TextView) itemView.findViewById(R.id.link_title);
             mStats = (TextView) itemView.findViewById(R.id.link_stats);
             mDetails = (TextView) itemView.findViewById(R.id.link_author);
+            mBody = (TextView) itemView.findViewById(R.id.link_body);
         }
     }
 
