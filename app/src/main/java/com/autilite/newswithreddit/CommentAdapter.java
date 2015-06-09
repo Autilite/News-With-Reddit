@@ -2,6 +2,8 @@ package com.autilite.newswithreddit;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,7 +65,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Comment com = comments.get(position-1);
             CommentHolder commentHolder = (CommentHolder) holder;
 
-            commentHolder.mBody.setText(com.getBody());
+            CharSequence body = removeTrailingLines(Html.fromHtml(com.getBody_html()));
+            commentHolder.mBody.setText(body);
+            commentHolder.mBody.setMovementMethod(LinkMovementMethod.getInstance());
+
             String comAuthor = com.getAuthor();
 
             // Set author text
@@ -123,10 +128,25 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     link.getSubreddit() + delim +
                     link.getDomain());
             if (!link.getSelftext().equals("")) {
-                linkHolder.mBody.setText(link.getSelftext());
+                CharSequence body = removeTrailingLines(Html.fromHtml(link.getSelftext_html()));
+                linkHolder.mBody.setText(body);
+                linkHolder.mBody.setMovementMethod(LinkMovementMethod.getInstance());
                 linkHolder.mBody.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    /**
+     * Removes the trailing two new lines from the text
+     * @param text
+     *      The text to trim
+     * @return
+     *      The text without the last two blank lines or the original text
+     */
+    private CharSequence removeTrailingLines(CharSequence text) {
+        if (text.charAt(text.length() - 1) == '\n' && text.charAt(text.length() - 2) == '\n') {
+            return text.subSequence(0, text.length() - 2);
+        } else return text;
     }
 
     @Override
