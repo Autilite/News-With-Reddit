@@ -126,8 +126,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             LinkHolder linkHolder = (LinkHolder) holder;
 
             // Get thumbnail url and parse it
-            String thumbnailUrl = ThumbnailUtil.parseThumbnail(link.getThumbnail());
-            if (!thumbnailUrl.equals("")) {
+            String thumbnailUrl = link.getThumbnail();
+            int drawable;
+            if ((drawable = ThumbnailUtil.getStaticThumbnail(thumbnailUrl)) != -1) {
+                linkHolder.mThumbnail.setVisibility(View.VISIBLE);
+                linkHolder.mThumbnail.setImageResource(drawable);
+            } else if (!thumbnailUrl.equals("")) {
                 // Download the the thumbnail and set it when done
                 linkHolder.mThumbnail.setVisibility(View.VISIBLE);
                 new DownloadImageTask((ImageView) linkHolder.mThumbnail.findViewById(R.id.link_thumbnail)).

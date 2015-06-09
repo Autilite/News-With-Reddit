@@ -37,14 +37,17 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.LinkHolder>{
         Link link = links.get(i);
 
         // Get thumbnail url and parse it
-        String thumbnailUrl = ThumbnailUtil.parseThumbnail(link.getThumbnail());
-        if (!thumbnailUrl.equals("")) {
+        String thumbnailUrl = link.getThumbnail();
+        int drawable;
+        if ((drawable = ThumbnailUtil.getStaticThumbnail(thumbnailUrl)) != -1) {
+            linkHolder.mThumbnail.setVisibility(View.VISIBLE);
+            linkHolder.mThumbnail.setImageResource(drawable);
+        } else if (!thumbnailUrl.equals("")) {
             // Download the the thumbnail and set it when done
             linkHolder.mThumbnail.setVisibility(View.VISIBLE);
             new DownloadImageTask((ImageView) linkHolder.mThumbnail.findViewById(R.id.link_thumbnail)).
                     execute(thumbnailUrl);
         } else {
-            // Remove thumbnail first to remove the old recycled thumbnail if there was one
             linkHolder.mThumbnail.setVisibility(View.GONE);
             linkHolder.mThumbnail.setImageBitmap(null);
         }
