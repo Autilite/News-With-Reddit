@@ -2,6 +2,7 @@ package com.autilite.newswithreddit;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +19,20 @@ import java.util.List;
 public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_LINK = 0;
     private static final int TYPE_COMMENT = 1;
+    private static final String TAG = CommentAdapter.class.getName();
     private List<Comment> comments;
     private Link link;
     private Context context;
+
+    private String author;
 
     public CommentAdapter(Context context, Link link, List<Comment> comments) {
         // Need context for the padding on the comment level
         this.comments = comments;
         this.link = link;
         this.context = context;
+
+        author = link.getAuthor();
     }
 
     @Override
@@ -58,7 +64,45 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             CommentHolder commentHolder = (CommentHolder) holder;
 
             commentHolder.mBody.setText(com.getBody());
-            commentHolder.mAuthor.setText(com.getAuthor());
+            String comAuthor = com.getAuthor();
+
+            // Set author text
+            commentHolder.mAuthor.setText(comAuthor);
+            int backResid = -1;
+            int colResid = -1;
+            // Set author distinguished style
+            String distinguished = com.getDistinguished();
+            switch(distinguished) {
+                case "null":
+                    boolean eq = author.equals(comAuthor);
+                    if (eq) {
+                        backResid = R.drawable.distinguished_submitter;
+                        colResid = R.color.link_submitter;
+                    }
+                    break;
+                case "moderator":
+                    backResid = R.drawable.distinguished_moderator;
+                    colResid = R.color.link_moderator;
+                    break;
+                case "admin":
+                    backResid = R.drawable.distinguished_admin;
+                    colResid = R.color.link_admin;
+                    break;
+                case "special":
+                    // TODO
+                    break;
+                default:
+                    Log.e(TAG, "Comment has invalid \"distinguished\" value" );
+                    break;
+            }
+            if (backResid != -1) {
+                commentHolder.mAuthor.setBackgroundResource(backResid);
+                commentHolder.mAuthor.setTextColor(context.getResources().getColor(colResid));
+            } else {
+                commentHolder.mAuthor.setBackgroundResource(0);
+                commentHolder.mAuthor.setTextColor(context.getResources().getColor(R.color.link_default));
+            }
+            // Set score
             if (com.isScore_hidden()) {
                 commentHolder.mPoints.setText(R.string.score_hidden);
             } else {

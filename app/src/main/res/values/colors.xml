@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="link_submitter">#00308F</color>
+    <color name="link_moderator">#008000</color>
+    <color name="link_admin">#D3212D</color>
+    <color name="link_default">#000000</color>
+
+    <color name="link_body">#36454f</color>
+    <color name="link_link">#72a0c1</color>
+</resources>
