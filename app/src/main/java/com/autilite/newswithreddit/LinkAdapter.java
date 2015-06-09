@@ -4,9 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.autilite.newswithreddit.data.Link;
+import com.autilite.newswithreddit.util.DownloadImageTask;
+import com.autilite.newswithreddit.util.ThumbnailUtil;
 
 import java.util.List;
 
@@ -33,6 +36,20 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.LinkHolder>{
         String delim = " - ";
         Link link = links.get(i);
 
+        // Get thumbnail url and parse it
+        String thumbnailUrl = ThumbnailUtil.parseThumbnail(link.getThumbnail());
+        if (!thumbnailUrl.equals("")) {
+            // Download the the thumbnail and set it when done
+            linkHolder.mThumbnail.setVisibility(View.VISIBLE);
+            new DownloadImageTask((ImageView) linkHolder.mThumbnail.findViewById(R.id.link_thumbnail)).
+                    execute(thumbnailUrl);
+        } else {
+            // Remove thumbnail first to remove the old recycled thumbnail if there was one
+            linkHolder.mThumbnail.setVisibility(View.GONE);
+            linkHolder.mThumbnail.setImageBitmap(null);
+        }
+
+        // Set details
         linkHolder.mTitle.setText(link.getTitle());
         linkHolder.mStats.setText(String.valueOf(link.getNum_comments()) + " comments" + delim +
                 link.getScore() + " pts");
@@ -52,6 +69,7 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.LinkHolder>{
     }
 
     public class LinkHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private final ImageView mThumbnail;
         private final TextView mTitle;
         private final TextView mStats;
         private final TextView mDetails;
@@ -59,6 +77,7 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.LinkHolder>{
 
         public LinkHolder(View itemView) {
             super(itemView);
+            mThumbnail = (ImageView) itemView.findViewById(R.id.link_thumbnail);
             mTitle = (TextView) itemView.findViewById(R.id.link_title);
             mStats = (TextView) itemView.findViewById(R.id.link_stats);
             mDetails = (TextView) itemView.findViewById(R.id.link_author);

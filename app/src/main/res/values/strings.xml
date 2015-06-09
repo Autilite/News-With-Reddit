@@ -13,4 +13,5 @@
     <string name="action_settings">Settings</string>
 
     <string name="score_hidden">[score hidden]</string>
+    <string name="thumbnailDescription">thumbnail</string>
 </resources>

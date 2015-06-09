@@ -8,10 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.autilite.newswithreddit.data.Comment;
 import com.autilite.newswithreddit.data.Link;
+import com.autilite.newswithreddit.util.DownloadImageTask;
+import com.autilite.newswithreddit.util.ThumbnailUtil;
 
 import java.util.List;
 
@@ -121,12 +124,28 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (holder instanceof LinkHolder) {
             String delim = " - ";
             LinkHolder linkHolder = (LinkHolder) holder;
+
+            // Get thumbnail url and parse it
+            String thumbnailUrl = ThumbnailUtil.parseThumbnail(link.getThumbnail());
+            if (!thumbnailUrl.equals("")) {
+                // Download the the thumbnail and set it when done
+                linkHolder.mThumbnail.setVisibility(View.VISIBLE);
+                new DownloadImageTask((ImageView) linkHolder.mThumbnail.findViewById(R.id.link_thumbnail)).
+                        execute(thumbnailUrl);
+            } else {
+                linkHolder.mThumbnail.setVisibility(View.GONE);
+                linkHolder.mThumbnail.setImageBitmap(null);
+            }
+
+            // Set details
             linkHolder.mTitle.setText(link.getTitle());
             linkHolder.mStats.setText(String.valueOf(link.getNum_comments()) + " comments" + delim +
                     link.getScore() + " pts");
             linkHolder.mDetails.setText(link.getAuthor() + delim +
                     link.getSubreddit() + delim +
                     link.getDomain());
+
+            // Display self text only if not empty to hide the border
             if (!link.getSelftext().equals("")) {
                 CharSequence body = removeTrailingLines(Html.fromHtml(link.getSelftext_html()));
                 linkHolder.mBody.setText(body);
@@ -171,6 +190,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public class LinkHolder extends RecyclerView.ViewHolder {
+        private ImageView mThumbnail;
         private TextView mTitle;
         private TextView mStats;
         private TextView mDetails;
@@ -178,6 +198,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public LinkHolder(View itemView) {
             super(itemView);
+            mThumbnail = (ImageView) itemView.findViewById(R.id.link_thumbnail);
             mTitle = (TextView) itemView.findViewById(R.id.link_title);
             mStats = (TextView) itemView.findViewById(R.id.link_stats);
             mDetails = (TextView) itemView.findViewById(R.id.link_author);

@@ -4,38 +4,52 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:clickable="true"
-    android:background="?android:attr/selectableItemBackground"
-    android:padding="@dimen/link_item_padding" >
+    android:background="?android:attr/selectableItemBackground" >
 
-    <TextView
-        android:id="@+id/link_title"
+    <ImageView
+        android:id="@+id/link_thumbnail"
+        android:layout_width="@dimen/thumbnail_width"
+        android:layout_height="@dimen/thumbnail_width"
+        android:contentDescription="@string/thumbnailDescription" />
+
+    <RelativeLayout
+        android:id="@+id/link_info"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:textAppearance="@style/linkPrimary"
-        />
+        android:layout_height="match_parent"
+        android:padding="@dimen/link_item_padding"
+        android:layout_toRightOf="@id/link_thumbnail">
 
-    <TextView
-        android:id="@+id/link_stats"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/link_title"
-        android:textAppearance="@style/linkSecondary"
-        />
+        <TextView
+            android:id="@+id/link_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:textAppearance="@style/linkPrimary"
+            />
 
-    <TextView
-        android:id="@+id/link_author"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/link_stats"
-        android:textAppearance="@style/linkSecondary"
-        />
+        <TextView
+            android:id="@+id/link_stats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/link_title"
+            android:textAppearance="@style/linkSecondary"
+            />
+
+        <TextView
+            android:id="@+id/link_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/link_stats"
+            android:textAppearance="@style/linkSecondary"
+            />
+
+        </RelativeLayout>
 
     <TextView
         android:id="@+id/link_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/link_author"
+        android:layout_below="@id/link_info"
         android:visibility="gone"
         android:textAppearance="@style/linkBody"
         android:background="@drawable/link_selftext_border"
