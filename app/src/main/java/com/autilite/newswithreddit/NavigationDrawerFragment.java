@@ -11,14 +11,14 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -57,7 +57,10 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
+    private RecyclerView mDrawerRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
     private List<String> mSubreddits;
     private View mFragmentContainerView;
 
@@ -93,25 +96,26 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_navigation_drawer, container, false);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
-
         // Hard code static default subreddits
         String[] defaultSubs = {"/", "all"};
         mSubreddits = new ArrayList<>(Arrays.asList(defaultSubs));
 
-        mDrawerListView.setAdapter(new ArrayAdapter<>(
-                getActionBar().getThemedContext(),
-                R.layout.subreddit_list_item,
-                android.R.id.text1,
-                mSubreddits
+        mDrawerRecyclerView = (RecyclerView) inflater.inflate(
+                R.layout.fragment_navigation_drawer, container, false);
+
+        mDrawerRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        selectItem(position);
+                    }
+                }
         ));
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mAdapter = new NavbarAdapter(mSubreddits);
+
+        mDrawerRecyclerView.setLayoutManager(mLayoutManager);
+        mDrawerRecyclerView.setAdapter(mAdapter);
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
@@ -121,17 +125,15 @@ public class NavigationDrawerFragment extends Fragment {
             public void run() {
                 // Fetch default subs over a network on a new thread
                 mSubreddits.addAll(SubredditLinks.fetchDefaultSubreddits());
-                mDrawerListView.post(new Runnable() {
+                mDrawerRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
-                        // Must touch the UI on the UI thread
-                        ((ArrayAdapter) mDrawerListView.getAdapter()).notifyDataSetChanged();
+                        mDrawerRecyclerView.getAdapter().notifyDataSetChanged();
                     }
                 });
             }
         }.start();
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
+        return mDrawerRecyclerView;
     }
 
     public boolean isDrawerOpen() {
@@ -214,15 +216,15 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
+//        if (mDrawerListView != null) {
+//            mDrawerListView.setItemChecked(position, true);
+//        }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            if (mDrawerListView != null && mDrawerListView.getAdapter() != null) {
-                mCallbacks.onNavigationDrawerItemSelected((String) mDrawerListView.getAdapter().getItem(position));
+            if (mDrawerRecyclerView != null && mDrawerRecyclerView.getAdapter() != null) {
+                mCallbacks.onNavigationDrawerItemSelected(((NavbarAdapter) mDrawerRecyclerView.getAdapter()).getSubreddit(position));
             }
         }
     }
