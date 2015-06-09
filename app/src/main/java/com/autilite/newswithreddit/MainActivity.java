@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(String subreddit) {
+    public void onSubredditSelected(String subreddit) {
         Log.i(TAG, "Subreddit \"" + subreddit + "\" selected");
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();

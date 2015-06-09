@@ -1,5 +1,7 @@
 package com.autilite.newswithreddit;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -13,13 +15,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.autilite.newswithreddit.fetcher.SubredditLinks;
@@ -46,6 +50,8 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
+    private static final String TAG = NavigationDrawerFragment.class.getName();
+
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -64,7 +70,7 @@ public class NavigationDrawerFragment extends Fragment {
     private List<String> mSubreddits;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -107,7 +113,16 @@ public class NavigationDrawerFragment extends Fragment {
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        selectItem(position);
+                        if (mDrawerRecyclerView.getAdapter() instanceof  NavbarAdapter) {
+                            NavbarAdapter adapter = (NavbarAdapter) mDrawerRecyclerView.getAdapter();
+                            if (adapter.isSearch(position)) {
+                                searchSubreddit();
+                            } else if (adapter.isSubreddit(position)) {
+                                selectItem(position);
+                            }
+                        } else {
+                            Log.d(TAG, "Update mDrawerRecyclerView adapter");
+                        }
                     }
                 }
         ));
@@ -214,6 +229,39 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    private void searchSubreddit() {
+        // Setup the search input
+        final EditText input = new EditText(getActivity());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setHint("Subreddit");
+
+        // Build the input dialog
+        new AlertDialog.Builder(getActivity()).setTitle("Enter a subreddit")
+                .setView(input)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectSubreddit(input.getText().toString());
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .show();
+    }
+
+    private void selectSubreddit(String subreddit) {
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mFragmentContainerView);
+        }
+        if (mCallbacks != null) {
+            mCallbacks.onSubredditSelected(subreddit);
+        }
+    }
+
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
 //        if (mDrawerListView != null) {
@@ -224,7 +272,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
         if (mCallbacks != null) {
             if (mDrawerRecyclerView != null && mDrawerRecyclerView.getAdapter() != null) {
-                mCallbacks.onNavigationDrawerItemSelected(((NavbarAdapter) mDrawerRecyclerView.getAdapter()).getSubreddit(position));
+                mCallbacks.onSubredditSelected(((NavbarAdapter) mDrawerRecyclerView.getAdapter()).getSubreddit(position));
             }
         }
     }
@@ -305,6 +353,6 @@ public class NavigationDrawerFragment extends Fragment {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(String subreddit);
+        void onSubredditSelected(String subreddit);
     }
 }
