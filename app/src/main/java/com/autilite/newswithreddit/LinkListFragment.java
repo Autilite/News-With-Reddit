@@ -61,7 +61,6 @@ public class LinkListFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, subreddit);
         fragment.setArguments(args);
-        fragment.fetcher = new LinkFetcher(subreddit);
         fragment.mSubreddit = subreddit;
         return fragment;
     }
@@ -77,6 +76,7 @@ public class LinkListFragment extends Fragment {
         if (getArguments() != null) {
             mSubreddit = getArguments().getString(ARG_PARAM1);
         }
+        fetcher = new LinkFetcher(mSubreddit);
         setRetainInstance(true);
     }
 
@@ -167,6 +167,7 @@ public class LinkListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mContainer.removeView(mProgressBar);
     }
 
     /**
