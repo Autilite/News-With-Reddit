@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.autilite.newswithreddit.data.Link;
-import com.autilite.newswithreddit.util.DownloadImageTask;
+import com.autilite.newswithreddit.util.LoadThumbnail;
 import com.autilite.newswithreddit.util.ThumbnailUtil;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.LinkHolder>{
         } else if (!thumbnailUrl.equals("")) {
             // Download the the thumbnail and set it when done
             linkHolder.mThumbnail.setVisibility(View.VISIBLE);
-            new DownloadImageTask((ImageView) linkHolder.mThumbnail.findViewById(R.id.link_thumbnail)).
+            new LoadThumbnail((ImageView) linkHolder.mThumbnail.findViewById(R.id.link_thumbnail)).
                     execute(thumbnailUrl);
         } else {
             linkHolder.mThumbnail.setVisibility(View.GONE);
