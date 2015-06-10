@@ -182,6 +182,7 @@ public class LinkListFragment extends Fragment {
      */
     public interface LinkItemCallbacks {
         public void onLinkSelect(Link link);
+        public void onThumbnailSelect(Link link);
     }
 
 }

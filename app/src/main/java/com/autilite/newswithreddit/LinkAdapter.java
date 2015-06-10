@@ -71,7 +71,7 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.LinkHolder>{
         this.linkListener = linkListener;
     }
 
-    public class LinkHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class LinkHolder extends RecyclerView.ViewHolder {
         private final ImageView mThumbnail;
         private final TextView mTitle;
         private final TextView mStats;
@@ -84,18 +84,29 @@ public class LinkAdapter extends RecyclerView.Adapter<LinkAdapter.LinkHolder>{
             mTitle = (TextView) itemView.findViewById(R.id.link_title);
             mStats = (TextView) itemView.findViewById(R.id.link_stats);
             mDetails = (TextView) itemView.findViewById(R.id.link_author);
-            itemView.setOnClickListener(this);
+
+            mThumbnail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (link != null && linkListener != null) {
+                        linkListener.onThumbnailSelect(link);
+                    }
+                }
+            });
+
+            itemView.findViewById(R.id.link_info).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (link != null && linkListener != null) {
+                        linkListener.onLinkSelect(link);
+                    }
+                }
+            });
         }
 
         public void bindLink(Link link) {
             this.link = link;
         }
 
-        @Override
-        public void onClick(View v) {
-            if (link != null && linkListener != null) {
-                linkListener.onLinkSelect(link);
-            }
-        }
     }
 }

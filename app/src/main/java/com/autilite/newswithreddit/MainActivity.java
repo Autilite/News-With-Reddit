@@ -60,10 +60,31 @@ public class MainActivity extends ActionBarActivity
     public void onLinkSelect(Link link) {
         Log.i(TAG, link.getTitle() + " (" + link.getSubreddit() + ") was selected.\nPermalink: "
                 + link.getPermalink());
-        Intent intent = new Intent(this, CommentActivity.class);
-        intent.putExtra(COMMENT_QUERY, link.getId());
-        intent.putExtra(COMMENT_SUBREDDIT, link.getSubreddit());
-        startActivity(intent);
+        Intent comment = new Intent(this, CommentActivity.class);
+        comment.putExtra(COMMENT_QUERY, link.getId());
+        comment.putExtra(COMMENT_SUBREDDIT, link.getSubreddit());
+        startActivity(comment);
+    }
+
+    @Override
+    public void onThumbnailSelect(Link link) {
+        Log.i(TAG, link.getTitle() + " (" + link.getSubreddit() + ") thumbnail was selected.\n" +
+                "Permalink: " + link.getPermalink());
+        if (isSelfLink(link)) {
+            onLinkSelect(link);
+        } else {
+            String url = link.getUrl();
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://" + url;
+            }
+            Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(browser);
+        }
+    }
+
+    private boolean isSelfLink(Link link) {
+        String url = link.getUrl();
+        return url.matches("^(https?://)?(www.)?reddit.com/r/[\\w]*/comments/[\\w]*(/?[\\w_\\d]*/?)?$");
     }
 
     public void onSectionAttached(String subreddit) {
