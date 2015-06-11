@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -234,9 +235,10 @@ public class NavigationDrawerFragment extends Fragment {
         final EditText input = new EditText(getActivity());
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setHint("Subreddit");
+        input.requestFocus();
 
         // Build the input dialog
-        new AlertDialog.Builder(getActivity()).setTitle("Enter a subreddit")
+        AlertDialog diag = new AlertDialog.Builder(getActivity()).setTitle("Enter a subreddit")
                 .setView(input)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -250,7 +252,9 @@ public class NavigationDrawerFragment extends Fragment {
                         dialog.cancel();
                     }
                 })
-                .show();
+                .create();
+        diag.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        diag.show();
     }
 
     private void selectSubreddit(String subreddit) {
