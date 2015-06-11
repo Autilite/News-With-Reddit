@@ -1,5 +1,6 @@
 package com.autilite.newswithreddit.fetcher;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.autilite.newswithreddit.data.Link;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,21 +22,44 @@ import java.util.List;
 public class LinkFetcher extends RedditFetcher{
     private static final String TAG = LinkFetcher.class.getName();
 
+    public static enum Order {
+        HOT, NEW, RISING, CONTROVERSIAL, TOP
+    }
+
+    private boolean isFrontpage;
+    private String subreddit;
+    private String before, after;
+    private int limit;
+    private Order order;
+
     public LinkFetcher(String subreddit) {
-        super(subreddit);
+        this.subreddit = subreddit;
+        isFrontpage = subreddit.equals("/");
     }
 
     @Override
     public void generateUrl() {
-        if (urlParams.equals("/") || urlParams.startsWith("/r/")) {
-            url = REDDIT_BASE_URL + urlParams + JSON_FORMAT;
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http")
+                .authority("www.reddit.com");
+
+        if (isFrontpage) {
+            builder.encodedPath("/");
         } else {
-            url = REDDIT_BASE_URL + REDDIT_SUBREDDIT_BASE + urlParams + JSON_FORMAT;
+            builder.encodedPath("/r/");
+            builder.appendPath(subreddit);
         }
-        if (!after.equals("")) {
-            url += "?after=" + after;
+
+        if (after != null && !after.equals("")) {
+            builder.appendQueryParameter("after", after);
         }
-        Log.i(TAG, "Generated url: " + url);
+
+        builder.appendEncodedPath(".json");
+
+        url = builder.build().toString();
+
+        Log.i(TAG, "Generated new uri: " + url);
+
     }
 
     public List<Link> fetch() {
