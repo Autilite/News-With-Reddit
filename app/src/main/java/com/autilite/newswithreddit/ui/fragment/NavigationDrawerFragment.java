@@ -32,7 +32,6 @@ import com.autilite.newswithreddit.ui.adapter.NavbarAdapter;
 import com.autilite.newswithreddit.fetcher.SubredditLinks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -70,7 +69,7 @@ public class NavigationDrawerFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private List<String> mSubreddits;
+    private List<NavbarAdapter.NavbarItem> mSubreddits;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 1;
@@ -105,10 +104,6 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Hard code static default subreddits
-        String[] defaultSubs = {"/", "all"};
-        mSubreddits = new ArrayList<>(Arrays.asList(defaultSubs));
-
         mDrawerRecyclerView = (RecyclerView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
 
@@ -118,11 +113,8 @@ public class NavigationDrawerFragment extends Fragment {
                     public void onItemClick(View view, int position) {
                         if (mDrawerRecyclerView.getAdapter() instanceof NavbarAdapter) {
                             NavbarAdapter adapter = (NavbarAdapter) mDrawerRecyclerView.getAdapter();
-                            if (adapter.isSearch(position)) {
-                                searchSubreddit();
-                            } else if (adapter.isSubreddit(position)) {
-                                selectItem(position);
-                            }
+                            NavbarAdapter.NavbarItem item = adapter.getNavbarItem(position);
+                            selectItem(item.type, position);
                         } else {
                             Log.d(TAG, "Update mDrawerRecyclerView adapter");
                         }
@@ -130,19 +122,24 @@ public class NavigationDrawerFragment extends Fragment {
                 }
         ));
         mLayoutManager = new LinearLayoutManager(getActivity());
+
+        mSubreddits = new ArrayList<>();
         mAdapter = new NavbarAdapter(mSubreddits);
 
         mDrawerRecyclerView.setLayoutManager(mLayoutManager);
         mDrawerRecyclerView.setAdapter(mAdapter);
 
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+        // TODO Select either the default item (0) or the last selected item.
+        selectItem(NavbarAdapter.Type.FRONT_PAGE, 0);
 
         new Thread () {
             @Override
             public void run() {
                 // Fetch default subs over a network on a new thread
-                mSubreddits.addAll(SubredditLinks.fetchDefaultSubreddits());
+                List<String> sub = SubredditLinks.fetchDefaultSubreddits();
+                for (String s : sub) {
+                    mSubreddits.add(new NavbarAdapter.NavbarItem(s, NavbarAdapter.Type.SUBREDDIT));
+                }
                 mDrawerRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -265,18 +262,34 @@ public class NavigationDrawerFragment extends Fragment {
         }
     }
 
-    private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
+    private void selectItem(NavbarAdapter.Type type, int position) {
 //        if (mDrawerListView != null) {
 //            mDrawerListView.setItemChecked(position, true);
 //        }
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            if (mDrawerRecyclerView != null && mDrawerRecyclerView.getAdapter() != null) {
-                mCallbacks.onSubredditSelected(((NavbarAdapter) mDrawerRecyclerView.getAdapter()).getSubreddit(position));
-            }
+        switch (type) {
+            case FRONT_PAGE:
+                selectSubreddit("/");
+                break;
+            case ALL:
+                selectSubreddit("all");
+                break;
+            case RANDOM:
+                selectSubreddit("random");
+                break;
+            case SEARCH:
+                searchSubreddit();
+                break;
+            case SUBREDDIT:
+                mCurrentSelectedPosition = position;
+                if (mDrawerLayout != null) {
+                    mDrawerLayout.closeDrawer(mFragmentContainerView);
+                }
+                if (mCallbacks != null) {
+                    if (mDrawerRecyclerView != null && mDrawerRecyclerView.getAdapter() != null) {
+                        mCallbacks.onSubredditSelected(((NavbarAdapter) mDrawerRecyclerView.getAdapter()).getSubreddit(position));
+                    }
+                }
+                break;
         }
     }
 

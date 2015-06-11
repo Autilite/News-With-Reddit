@@ -4,81 +4,86 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.autilite.newswithreddit.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by kelvin on 03/06/15.
  */
 public class NavbarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int TYPE_SEARCH = 0;
+    private static final int TYPE_HEADER = 0;
     private static final int TYPE_SUBREDDIT = 1;
-    private List<String> subreddits;
+    private List<NavbarItem> subreddits;
+    private List<NavbarItem> headerItems;
 
-    public NavbarAdapter(List<String> subreddits) {
+    public static enum Type {
+        FRONT_PAGE, ALL, RANDOM, SEARCH, SUBREDDIT
+    }
+
+    public NavbarAdapter(List<NavbarItem> subreddits) {
+        this.subreddits = new ArrayList<>();
+        headerItems = new ArrayList<>();
         this.subreddits = subreddits;
+
+        headerItems.add(new NavbarItem("Front page", Type.FRONT_PAGE));
+        headerItems.add(new NavbarItem("All", Type.ALL));
+        headerItems.add(new NavbarItem("random", Type.RANDOM));
+        headerItems.add(new NavbarItem("Search subreddit", Type.SEARCH));
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == TYPE_SEARCH){
-            return position;
+        if (position < headerItems.size()){
+            return TYPE_HEADER;
         }
         return TYPE_SUBREDDIT;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        if (i == TYPE_SEARCH) {
-            View view = LayoutInflater.from(viewGroup.getContext()).
-                    inflate(R.layout.subreddit_list_header, viewGroup, false);
-            return new HeaderHolder(view);
-        } else {
-            View view = LayoutInflater.from(viewGroup.getContext()).
-                    inflate(R.layout.subreddit_list_item, viewGroup, false);
-            return new SubredditHolder(view);
-        }
+        View view = LayoutInflater.from(viewGroup.getContext()).
+                inflate(R.layout.subreddit_list_item, viewGroup, false);
+        return new SubredditHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SubredditHolder) {
             ((SubredditHolder) holder).mSubreddit.setText(getSubreddit(position));
-        } else if (holder instanceof HeaderHolder) {
-            HeaderHolder header = (HeaderHolder) holder;
-            header.searchSubreddit.setText("Search subreddit");
         }
         else throw new RuntimeException("Incorrect ViewHolder type");
     }
 
-    private int getHeaderSize() {
-        return 1;
-    }
-
     @Override
     public int getItemCount() {
-        return subreddits.size() + getHeaderSize();
+        return subreddits.size() + headerItems.size();
     }
 
     public String getSubreddit(int position) {
         // Since we have a header, need to subtract it for correct List indexing
         if (isSubreddit(position)) {
-            return subreddits.get(position - getHeaderSize());
+            return subreddits.get(position - headerItems.size()).title;
         } else {
-            return "";
+            return headerItems.get(position).title;
         }
     }
 
-    public boolean isSearch(int position) {
-        return position == TYPE_SEARCH;
+    public boolean isSubreddit(int position) {
+        return position >= headerItems.size() && position <= subreddits.size() + headerItems.size();
     }
 
-    public boolean isSubreddit(int position) {
-        return position > 0 && position <= subreddits.size();
+    public NavbarItem getNavbarItem(int position) {
+        if (0 <= position && position < headerItems.size()) {
+            return headerItems.get(position);
+        } else if (isSubreddit(position)) {
+            return subreddits.get(position - headerItems.size());
+        }
+        return null;
     }
 
     public class SubredditHolder extends RecyclerView.ViewHolder {
@@ -90,12 +95,13 @@ public class NavbarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public class HeaderHolder extends RecyclerView.ViewHolder {
-        private Button searchSubreddit;
+    public final static class NavbarItem {
+        public final String title;
+        public final Type type;
 
-        public HeaderHolder(View itemView) {
-            super(itemView);
-            searchSubreddit = (Button) itemView.findViewById(R.id.search_subreddit);
+        public NavbarItem(String title, Type type) {
+            this.title = title;
+            this.type = type;
         }
     }
 
