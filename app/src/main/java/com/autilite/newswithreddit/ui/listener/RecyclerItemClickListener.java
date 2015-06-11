@@ -1,4 +1,4 @@
-package com.autilite.newswithreddit;
+package com.autilite.newswithreddit.ui.listener;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

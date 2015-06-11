@@ -1,4 +1,4 @@
-package com.autilite.newswithreddit;
+package com.autilite.newswithreddit.ui.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.autilite.newswithreddit.ui.fragment.LinkListFragment;
+import com.autilite.newswithreddit.R;
 import com.autilite.newswithreddit.data.Link;
 import com.autilite.newswithreddit.util.LoadThumbnail;
 import com.autilite.newswithreddit.util.ThumbnailUtil;

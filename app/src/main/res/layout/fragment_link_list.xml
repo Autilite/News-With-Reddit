@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.autilite.newswithreddit.LinkListFragment">
+    tools:context="com.autilite.newswithreddit.ui.fragment.LinkListFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/link_recycler_view"

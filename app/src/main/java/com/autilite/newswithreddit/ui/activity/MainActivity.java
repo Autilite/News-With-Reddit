@@ -1,4 +1,4 @@
-package com.autilite.newswithreddit;
+package com.autilite.newswithreddit.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
+import com.autilite.newswithreddit.ui.fragment.LinkCommentFragment;
+import com.autilite.newswithreddit.ui.fragment.LinkListFragment;
+import com.autilite.newswithreddit.ui.fragment.NavigationDrawerFragment;
+import com.autilite.newswithreddit.R;
 import com.autilite.newswithreddit.data.Link;
 
 public class MainActivity extends ActionBarActivity

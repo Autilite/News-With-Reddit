@@ -1,4 +1,4 @@
-package com.autilite.newswithreddit;
+package com.autilite.newswithreddit.ui.fragment;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.autilite.newswithreddit.R;
+import com.autilite.newswithreddit.ui.adapter.CommentAdapter;
 import com.autilite.newswithreddit.data.Comment;
 import com.autilite.newswithreddit.data.Link;
 import com.autilite.newswithreddit.fetcher.SubredditLinks;
@@ -23,7 +25,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link com.autilite.newswithreddit.LinkCommentFragment.LinkCommentListener} interface
+ * {@link LinkCommentFragment.LinkCommentListener} interface
  * to handle interaction events.
  * Use the {@link LinkCommentFragment#newInstance} factory method to
  * create an instance of this fragment.

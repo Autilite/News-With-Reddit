@@ -1,4 +1,4 @@
-package com.autilite.newswithreddit;
+package com.autilite.newswithreddit.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,6 +7,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.autilite.newswithreddit.ui.fragment.LinkCommentFragment;
+import com.autilite.newswithreddit.R;
 
 
 public class CommentActivity extends ActionBarActivity

@@ -1,4 +1,4 @@
-package com.autilite.newswithreddit;
+package com.autilite.newswithreddit.ui.fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -26,6 +26,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.autilite.newswithreddit.R;
+import com.autilite.newswithreddit.ui.listener.RecyclerItemClickListener;
+import com.autilite.newswithreddit.ui.adapter.NavbarAdapter;
 import com.autilite.newswithreddit.fetcher.SubredditLinks;
 
 import java.util.ArrayList;
@@ -113,7 +116,7 @@ public class NavigationDrawerFragment extends Fragment {
                 new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        if (mDrawerRecyclerView.getAdapter() instanceof  NavbarAdapter) {
+                        if (mDrawerRecyclerView.getAdapter() instanceof NavbarAdapter) {
                             NavbarAdapter adapter = (NavbarAdapter) mDrawerRecyclerView.getAdapter();
                             if (adapter.isSearch(position)) {
                                 searchSubreddit();
