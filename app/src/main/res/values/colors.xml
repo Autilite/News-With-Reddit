@@ -7,4 +7,5 @@
 
     <color name="link_body">#36454f</color>
     <color name="link_link">#0045C4</color>
+    <color name="section_header">#0047AB</color>
 </resources>

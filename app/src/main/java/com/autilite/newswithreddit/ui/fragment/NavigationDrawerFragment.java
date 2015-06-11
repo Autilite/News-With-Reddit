@@ -290,7 +290,7 @@ public class NavigationDrawerFragment extends Fragment {
                 }
                 if (mCallbacks != null) {
                     if (mDrawerRecyclerView != null && mDrawerRecyclerView.getAdapter() != null) {
-                        mCallbacks.onSubredditSelected(((NavbarAdapter) mDrawerRecyclerView.getAdapter()).getSubreddit(position));
+                        mCallbacks.onSubredditSelected(((NavbarAdapter) mDrawerRecyclerView.getAdapter()).getTitle(position));
                     }
                 }
                 break;

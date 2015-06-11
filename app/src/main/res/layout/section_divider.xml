@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:focusable="false"
+    android:orientation="vertical">
+
+    <TextView android:id="@+id/list_section_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:paddingTop="4dp"
+        android:paddingLeft="8dp"
+        android:textColor="@color/section_header"
+        android:textSize="14sp"/>
+
+    <View android:id="@+id/list_section_line"
+        android:layout_height="2dp"
+        android:layout_width="match_parent"
+        android:minHeight="2dp"
+        android:background="?android:listDivider"
+        android:layout_marginTop="4dp"/>
+
+</LinearLayout>

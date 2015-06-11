@@ -17,17 +17,20 @@ import java.util.List;
 public class NavbarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_SUBREDDIT = 1;
+    private static final int TYPE_DIVIDER = 2;
+
     private List<NavbarItem> subreddits;
     private List<NavbarItem> headerItems;
 
     public static enum Type {
-        FRONT_PAGE, ALL, RANDOM, SEARCH, SUBREDDIT
+        FRONT_PAGE, ALL, RANDOM, SEARCH, SUBREDDIT, DIVIDER
     }
 
     public NavbarAdapter(List<NavbarItem> subreddits) {
         this.subreddits = new ArrayList<>();
         headerItems = new ArrayList<>();
         this.subreddits = subreddits;
+        this.subreddits.add(0, new NavbarItem("Subreddits", Type.DIVIDER));
 
         headerItems.add(new NavbarItem("Front page", Type.FRONT_PAGE));
         headerItems.add(new NavbarItem("All", Type.ALL));
@@ -38,23 +41,41 @@ public class NavbarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (position < headerItems.size()){
-            return TYPE_HEADER;
+        Type t = getNavbarItem(position).type;
+        switch (t) {
+            case FRONT_PAGE:
+            case ALL:
+            case RANDOM:
+            case SEARCH:
+                return TYPE_HEADER;
+            case SUBREDDIT:
+                return TYPE_SUBREDDIT;
+            default:
+                return TYPE_DIVIDER;
         }
-        return TYPE_SUBREDDIT;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).
-                inflate(R.layout.subreddit_list_item, viewGroup, false);
-        return new SubredditHolder(view);
+        View view;
+        if (i == TYPE_DIVIDER) {
+            view = LayoutInflater.from(viewGroup.getContext()).
+                    inflate(R.layout.section_divider, viewGroup, false);
+            return new Divider(view);
+        } else {
+            view = LayoutInflater.from(viewGroup.getContext()).
+                    inflate(R.layout.subreddit_list_item, viewGroup, false);
+            return new SubredditHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof SubredditHolder) {
-            ((SubredditHolder) holder).mSubreddit.setText(getSubreddit(position));
+        if (holder instanceof Divider) {
+            ((Divider) holder).dividerText.setText(getTitle(position));
+        }
+        else if (holder instanceof SubredditHolder) {
+            ((SubredditHolder) holder).mSubreddit.setText(getTitle(position));
         }
         else throw new RuntimeException("Incorrect ViewHolder type");
     }
@@ -64,7 +85,7 @@ public class NavbarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return subreddits.size() + headerItems.size();
     }
 
-    public String getSubreddit(int position) {
+    public String getTitle(int position) {
         // Since we have a header, need to subtract it for correct List indexing
         if (isSubreddit(position)) {
             return subreddits.get(position - headerItems.size()).title;
@@ -95,6 +116,15 @@ public class NavbarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
+    private class Divider extends RecyclerView.ViewHolder {
+        private TextView dividerText;
+
+        public Divider(View view) {
+            super(view);
+            dividerText = (TextView) itemView.findViewById(R.id.list_section_text);
+        }
+    }
+
     public final static class NavbarItem {
         public final String title;
         public final Type type;
@@ -104,5 +134,4 @@ public class NavbarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             this.type = type;
         }
     }
-
 }
