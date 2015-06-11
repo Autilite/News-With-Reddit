@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.autilite.newswithreddit.R;
+import com.autilite.newswithreddit.fetcher.CommentFetcher;
 import com.autilite.newswithreddit.ui.adapter.CommentAdapter;
 import com.autilite.newswithreddit.data.Comment;
 import com.autilite.newswithreddit.data.Link;
-import com.autilite.newswithreddit.fetcher.SubredditLinks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class LinkCommentFragment extends Fragment {
 
     private List<Comment> comments;
     private Link link;
-    private SubredditLinks srl;
+    private CommentFetcher fetcher;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mAdapter;
@@ -66,7 +66,7 @@ public class LinkCommentFragment extends Fragment {
         args.putString(ARG_URL, linkId);
         args.putString(ARG_SUBREDDIT, subreddit);
         fragment.setArguments(args);
-        fragment.srl = new SubredditLinks(subreddit, linkId);
+        fragment.fetcher = new CommentFetcher(subreddit, linkId);
         return fragment;
     }
 
@@ -113,11 +113,11 @@ public class LinkCommentFragment extends Fragment {
     private void fetchComments() {
         new Thread() {
             public void run() {
-                collapseComments(comments, srl.fetchTopLevelComments());
+                collapseComments(comments, fetcher.fetch());
                 mRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
-                        link = srl.getLink();
+                        link = fetcher.getLink();
                         mAdapter = new CommentAdapter(getActivity(), link, comments);
                         mRecyclerView.setAdapter(mAdapter);
                         mContainer.removeView(mProgressBar);

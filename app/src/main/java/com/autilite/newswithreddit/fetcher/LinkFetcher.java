@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +53,9 @@ public class LinkFetcher extends RedditFetcher{
             builder.appendQueryParameter("after", after);
         }
 
-        builder.appendEncodedPath(".json");
+        builder.appendEncodedPath(".json")
+                .appendQueryParameter("raw_json", "1");
+
 
         url = builder.build().toString();
 
