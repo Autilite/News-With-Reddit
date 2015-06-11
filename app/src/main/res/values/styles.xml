@@ -7,11 +7,11 @@
 
     <style name="linkPrimary">
         <item name="android:textColor">@color/link_link</item>
-        <item name="android:textSize">@dimen/largeTextSize</item>
+        <item name="android:textSize">@dimen/mediumTextSize</item>
     </style>
 
     <style name="linkSecondary">
-        <item name="android:textColor">#848482</item>
+        <item name="android:textColor">#888888</item>
         <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
@@ -21,17 +21,19 @@
     </style>
 
     <style name="commentAuthor">
-        <item name="android:textColor">#151515</item>
+        <item name="android:textColor">#666666</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
     <style name="commentPoints">
-        <item name="android:textColor">#777777</item>
+        <item name="android:textColor">#333333</item>
         <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
     <style name="commentTime">
+        <item name="android:textColor">#666666</item>
+        <item name="android:textSize">@dimen/smallTextSize</item>
     </style>
 
     <style name="commentBody">

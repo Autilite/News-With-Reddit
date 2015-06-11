@@ -21,6 +21,7 @@ public class LoadThumbnail extends AsyncTask<String, Void, Bitmap> {
 
     public LoadThumbnail(ImageView bitmap) {
         this.mBitmap = bitmap;
+        mBitmap.setImageDrawable(null);
     }
 
     @Override
